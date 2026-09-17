@@ -3,617 +3,907 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regional Realtor</title>
+    <title>Regional Realtor - Global Edition</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #e6f2ff;
-            margin: 0;
-            padding: 10px;
-        }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #e6f2ff; margin: 0; padding: 10px; transition: background-color 0.5s ease; }
+        h1 { color: #2c3e50; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* --- Setup Screen Styles --- */
-        #setup-screen {
-            background-color: white;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-            max-width: 550px;
-            margin: 30px auto;
-            box-sizing: border-box;
-            text-align: left;
-        }
-        #setup-screen h1 { text-align: center; }
-        .form-group { margin: 18px 0; }
-        label { font-weight: bold; display: block; margin-bottom: 6px; color: #34495e; }
-        input[type="number"], input[type="text"], select {
-            width: 100%; padding: 10px; font-size: 15px;
-            box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px;
-        }
-        .choice-btn {
-            padding: 10px; margin: 5px 5px 5px 0; font-size: 14px; cursor: pointer;
-            border: 2px solid #3498db; background-color: white; color: #3498db;
-            border-radius: 6px; width: 48%; display: inline-block; text-align: center; box-sizing: border-box;
-        }
+        /* Setup Screen */
+        #setup-screen { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 550px; margin: 40px auto; }
+        .form-group { margin: 20px 0; text-align: left; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; color: #2c3e50; }
+        input[type="number"], input[type="text"], select { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; }
+        .choice-btn { padding: 10px; margin: 5px; font-size: 14px; cursor: pointer; border: 2px solid #3498db; background-color: white; color: #3498db; border-radius: 5px; width: 45%; }
         .choice-btn.selected { background-color: #3498db; color: white; }
-        .qr-btn { background-color: #f39c12; color: white; border: none; width: 100%; margin-top: 10px; }
-        #join-code-box {
-            margin-top: 20px; padding: 15px; background-color: #f1f2f6;
-            border: 2px dashed #2c3e50; border-radius: 6px; text-align: center;
-        }
-        #the-code { font-size: 24px; font-weight: bold; letter-spacing: 3px; color: #e74c3c; }
-        
-        .banker-box, .pawn-config-box {
-            background: #f8f9fa; padding: 15px; border-radius: 6px;
-            border: 1px solid #dee2e6; margin-top: 15px;
-        }
-        .player-pawn-row {
-            display: flex; gap: 10px; margin-bottom: 8px; align-items: center;
-        }
-        .player-pawn-row span { font-weight: bold; width: 80px; font-size: 14px; }
-
-        .start-btn {
-            padding: 15px 30px; font-size: 18px; background-color: #27ae60;
-            color: white; border: none; border-radius: 6px; cursor: pointer;
-            margin-top: 20px; width: 100%;
-        }
+        .start-btn { padding: 15px 30px; font-size: 18px; background-color: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; width: 100%; font-weight: bold; }
         .start-btn:hover { background-color: #2ecc71; }
+        .start-btn:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        
+        .banker-box { background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6; margin-top: 20px; text-align: left; }
+        .player-config-row { display: flex; gap: 10px; margin-bottom: 10px; background: #f8f9fa; padding: 10px; border-radius: 5px; border: 1px solid #dee2e6; align-items: center; }
+        .player-config-row input { flex: 2; }
+        .player-config-row select { flex: 1; font-size: 20px; text-align: center; }
 
-        /* --- Game Board & UI Styles --- */
+        /* Game Layout */
         #game-screen { display: none; }
-        
-        #scoreboard {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        .player-score {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            min-width: 160px;
-            text-align: left;
-        }
-        .player-title {
-            font-size: 11px; font-weight: bold; color: #8e44ad;
-            text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px;
-        }
-        .player-name { font-weight: bold; font-size: 15px; margin-bottom: 8px; color: #2c3e50; }
-        .score-row {
-            display: flex; justify-content: space-between; font-size: 12px; margin-top: 4px; color: #7f8c8d;
-        }
-        .score-row.main {
-            font-size: 15px; font-weight: bold; color: #27ae60; 
-            margin-bottom: 6px; border-bottom: 1px solid #ecf0f1; padding-bottom: 6px;
-        }
+        #game-layout { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; align-items: flex-start; margin-top: 10px;}
+        #left-column { flex: 1; min-width: 300px; max-width: 850px; }
+        #right-column { width: 340px; background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 15px; text-align: left; height: 85vh; overflow-y: auto;}
 
-        #board {
-            display: grid;
-            grid-template-columns: repeat(11, 1fr);
-            grid-template-rows: repeat(11, 1fr);
-            gap: 2px;
-            background-color: #34495e; 
-            border: 4px solid #34495e;
-            width: 98vw;
-            max-width: 1000px;
-            aspect-ratio: 1; 
-            margin: 10px auto;
-        }
-        
-        .space {
-            background-color: white; display: flex; flex-direction: column;
-            align-items: center; justify-content: space-evenly; font-size: 10px;
-            font-weight: bold; text-align: center; padding: 5px; position: relative; overflow: hidden;
-        }
-        .property-img { width: 90%; height: 45px; object-fit: cover; border-radius: 3px; border: 1px solid #ccc; }
-        .board-center {
-            grid-column: 2 / 11; grid-row: 2 / 11; background-color: #e6f2ff;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .board-center h2 { font-size: 38px; color: #2c3e50; text-transform: uppercase; letter-spacing: 3px; margin: 0; }
-        .board-center h3 { margin: 5px 0 0 0; color: #7f8c8d; }
-        
-        .player-token {
-            width: 22px; height: 22px; border-radius: 50%; position: absolute;
-            transition: all 0.3s ease; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.6); 
-            z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 12px;
-        }
-        
-        #turn-indicator {
-            padding: 10px 20px; border-radius: 6px; color: white; font-weight: bold;
-            display: inline-block; margin-bottom: 10px; font-size: 18px; text-align: center;
-        }
+        /* Scoreboard */
+        #scoreboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        .player-score { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); min-width: 150px; text-align: left; position: relative; }
+        .player-score .avatar-badge { position: absolute; top: 5px; right: 5px; font-size: 20px; background: rgba(255,255,255,0.8); border-radius: 50%; padding: 2px; }
+        .player-title { font-size: 10px; font-weight: bold; text-transform: uppercase; margin-bottom: 3px; display: block; }
+        .player-name { font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #2c3e50; padding-right: 25px; }
+        .score-row { display: flex; justify-content: space-between; font-size: 11px; margin-top: 2px; color: #7f8c8d; }
+        .score-row.main { font-size: 13px; font-weight: bold; color: #27ae60; margin-bottom: 4px; border-bottom: 1px solid #ecf0f1; padding-bottom: 4px; }
+        .score-hidden { color: #bdc3c7; font-style: italic; font-weight: bold; }
 
-        .audio-controls { margin-top: 10px; }
-        .audio-btn {
-            background-color: #7f8c8d; color: white; border: none; padding: 6px 14px;
-            font-size: 13px; border-radius: 4px; cursor: pointer;
-        }
-        .audio-btn:hover { background-color: #606f7b; }
+        /* Board */
+        #board { display: grid; grid-template-columns: repeat(11, 1fr); grid-template-rows: repeat(11, 1fr); gap: 2px; background-color: #34495e; border: 4px solid #34495e; width: 100%; aspect-ratio: 1; position: relative; }
+        .space { background-color: white; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; font-size: 9px; font-weight: bold; text-align: center; padding: 4px; position: relative; overflow: hidden; transition: box-shadow 0.3s ease; }
+        .color-bar { position: absolute; top: 0; left: 0; right: 0; height: 20%; border-bottom: 1px solid #34495e; z-index: 1;}
+        .property-img { width: 90%; height: 32px; object-fit: cover; border-radius: 2px; border: 1px solid #ccc; margin-bottom: 2px; z-index: 2; position: relative;}
+        .space span, .space .price-tag { z-index: 2; position: relative; }
+        .price-tag { font-size: 9px; color: #2c3e50; margin-top: 1px; transition: color 0.3s ease, font-weight 0.3s ease; }
+        .board-center { grid-column: 2 / 11; grid-row: 2 / 11; background-color: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); position: relative; }
+        
+        #recession-banner { display: none; position: absolute; top: 20px; background: #c0392b; color: white; padding: 5px 20px; border-radius: 20px; font-weight: bold; font-size: 18px; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        #modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;
-        }
-        #modal-box {
-            background: white; padding: 25px; border-radius: 8px; max-width: 350px; width: 80%;
-            text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        #modal-box h3 { margin-top: 0; color: #2c3e50; }
-        #modal-box p { font-size: 14px; color: #555; }
-        .modal-btn {
-            background: #3498db; color: white; border: none; padding: 10px 20px;
-            font-size: 14px; border-radius: 6px; cursor: pointer; margin-top: 15px;
-        }
-        .modal-btn:hover { background: #2980b9; }
+        /* Houses & Overlays */
+        .house-container { display: flex; gap: 2px; margin-top: 2px; height: 6px; z-index: 3; position: relative; }
+        .house-icon { width: 6px; height: 6px; background: #27ae60; border: 1px solid #145a32; border-radius: 1px; }
+        .hotel-icon { width: 8px; height: 8px; background: #c0392b; border: 1px solid #641e16; border-radius: 1px; }
+        .mortgaged-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); color: white; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; z-index: 5; transform: rotate(-30deg); letter-spacing: 1px; }
+
+        /* Tokens & Dice */
+        #turn-indicator { padding: 10px 20px; border-radius: 5px; color: white; font-weight: bold; display: inline-block; margin-bottom: 5px; font-size: 16px; }
+        #dice-display { display: flex; gap: 15px; justify-content: center; margin: 10px 0; height: 40px; }
+        .die { width: 40px; height: 40px; background: white; border-radius: 8px; box-shadow: inset 0 0 8px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.3); display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 4px; }
+        .dot { background: #2c3e50; border-radius: 50%; width: 8px; height: 8px; justify-self: center; align-self: center; }
+
+        .player-token { width: 24px; height: 24px; border-radius: 50%; position: absolute; background: radial-gradient(circle at 30% 30%, #ffffff, #dcdde1); border: 2px solid #2f3640; box-shadow: 2px 4px 6px rgba(0,0,0,0.5), inset -2px -2px 4px rgba(0,0,0,0.3); z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: transform 0.1s;}
+        @keyframes hop { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-15px) scale(1.1); box-shadow: 2px 12px 10px rgba(0,0,0,0.3); } }
+        .walking { animation: hop 0.3s infinite ease-in-out; z-index: 20; }
+
+        /* Dashboard */
+        .dash-section { margin-top: 15px; }
+        .dash-section h3 { margin: 0 0 10px 0; font-size: 14px; color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center;}
+        .transaction-log { list-style: none; padding: 0; margin: 0; font-size: 11px; }
+        .transaction-log li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #ecf0f1; }
+        .amt-pos { color: #27ae60; font-weight: bold; }
+        .amt-neg { color: #c0392b; font-weight: bold; }
+        .prop-badge { display: inline-flex; align-items: center; padding: 4px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; margin: 2px; text-shadow: 1px 1px 1px rgba(0,0,0,0.5); border: 1px solid rgba(0,0,0,0.2); position: relative;}
+        .prop-badge.mortgaged { opacity: 0.5; text-decoration: line-through; }
+        .trade-btn { background-color: #9b59b6; color: white; border: none; border-radius: 4px; padding: 5px 8px; cursor: pointer; font-weight: bold; font-size: 11px; }
+        .bank-btn { background-color: #34495e; color: white; border: none; border-radius: 4px; padding: 5px 8px; cursor: pointer; font-weight: bold; font-size: 11px; }
+
+        /* Modals */
+        #modal-overlay, #trade-modal-overlay, #bank-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; }
+        .modal-box { background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+        #modal-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; color: #2c3e50; }
+        #modal-desc { font-size: 15px; margin-bottom: 20px; color: #3498db; white-space: pre-wrap; }
+        .modal-btn { padding: 10px; font-size: 14px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; font-weight: bold; width: 45%; }
+        .btn-buy { background-color: #27ae60; color: white; } .btn-auction { background-color: #e67e22; color: white; } .btn-pay { background-color: #c0392b; color: white; width: 100%; } .btn-okay { background-color: #3498db; color: white; width: 100%; }
+        .btn-bank { background-color: #34495e; color: white; width: 100%; margin-top: 10px; }
+        
+        #auction-controls { display: none; background: #fdf2e9; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #e67e22; text-align: left; }
+        #auction-seller-badge { display: inline-block; background: #c0392b; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-bottom: 10px; }
+        .auction-action-row { display: flex; gap: 5px; margin-top: 10px; }
+
+        /* Bank Manager */
+        #bank-modal { background: white; padding: 20px; border-radius: 10px; width: 95%; max-width: 600px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); z-index: 200; max-height: 90vh; overflow-y: auto;}
+        .bank-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #ecf0f1; background: #f8f9fa; margin-bottom: 5px; border-radius: 5px; }
+        .bank-item-row button { padding: 5px 10px; border: none; border-radius: 3px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        
+        /* Trade Modal */
+        #trade-modal { background: white; padding: 20px; border-radius: 10px; width: 95%; max-width: 750px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); z-index: 200; }
+        .trade-tabs { display: flex; border-bottom: 2px solid #bdc3c7; margin-bottom: 15px; }
+        .trade-tab { flex: 1; padding: 10px; font-weight: bold; cursor: pointer; background: #ecf0f1; border: none; font-size: 16px; color: #7f8c8d; }
+        .trade-tab.active { background: white; color: #2c3e50; border-top: 3px solid #9b59b6; border-left: 2px solid #bdc3c7; border-right: 2px solid #bdc3c7; border-bottom: 2px solid white; margin-bottom: -2px; }
+        .trade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; margin-bottom: 15px; }
+        .trade-col { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; }
+        select[multiple] { height: 100px; font-size: 12px; }
+        .trade-fee-notice { background: #fdf2e9; border: 1px solid #e67e22; padding: 10px; border-radius: 5px; font-size: 13px; color: #d35400; text-align: center; margin-bottom: 15px; font-weight: bold; }
+        
+        #news-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 300; pointer-events: none; align-items: center; justify-content: center; }
+        .news-banner { background: linear-gradient(135deg, #f1c40f, #f39c12); padding: 30px; border-radius: 10px; border: 4px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; width: 80%; max-width: 500px; transform: scale(0.8); animation: popIn 0.4s forwards; pointer-events: auto; }
+        .news-banner h2 { margin: 0 0 10px 0; color: #c0392b; font-size: 28px; text-transform: uppercase; font-weight: 900; }
+        @keyframes popIn { to { transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <audio id="bg-music" loop preload="auto">
+    <!-- AMBIENT MUSIC -->
+    <audio id="bg-audio" loop autoplay>
         <source src="https://upload.wikimedia.org/wikipedia/commons/e/e3/Jazz_In_Paris.ogg" type="audio/ogg">
         Your browser does not support the audio element.
     </audio>
 
-    <div id="modal-overlay">
-        <div id="modal-box">
-            <h3 id="modal-title">Notice</h3>
-            <p id="modal-text">Message goes here...</p>
-            <button class="modal-btn" onclick="closeModal()">OK</button>
-        </div>
-    </div>
-
-    <!-- SETUP SCREEN -->
+    <!-- SETUP -->
     <div id="setup-screen">
-        <h1>Welcome Realtors</h1>
+        <h1>Regional Realtor</h1>
+        <p style="color: #7f8c8d; font-size: 14px; margin-top:0;">Global Edition.</p>
         
-        <div style="margin-bottom: 20px; text-align: center;">
+        <div style="margin-bottom: 20px;">
             <button class="choice-btn selected" id="btn-host-mode" onclick="toggleMode('host')">Host Game</button>
             <button class="choice-btn" id="btn-join-mode" onclick="toggleMode('join')">Join Game</button>
         </div>
 
         <div id="host-ui">
-            <!-- Board Edition Selector -->
             <div class="form-group">
-                <label for="board-edition">Select Country / Board Edition</label>
-                <select id="board-edition">
-                    <option value="global">Global Edition (US / Standard)</option>
-                    <option value="london">London Edition (UK)</option>
+                <label>Select Region:</label>
+                <select id="region-select">
+                    <option value="uk">🇬🇧 United Kingdom</option>
+                    <option value="usa">🇺🇸 USA (Major Cities)</option>
+                    <option value="india">🇮🇳 India (Metros)</option>
+                    <option value="aus">🇦🇺 Australia (Coast)</option>
+                    <option value="ger">🇩🇪 Germany (Culture)</option>
+                    <option value="fra">🇫🇷 France (Paris)</option>
+                    <option value="rus">🇷🇺 Russia (Moscow)</option>
+                    <option value="jpn">🇯🇵 Japan (Tokyo/Osaka)</option>
+                    <option value="chn">🇨🇳 China (Megacities)</option>
+                    <option value="rsa">🇿🇦 South Africa</option>
+                    <option value="ita">🇮🇹 Italy (Rome)</option>
                 </select>
             </div>
-
-            <div class="form-group">
-                <label for="player-count">Total Users (2-8)</label>
-                <input type="number" id="player-count" min="2" max="8" value="2" oninput="updatePlayerConfigOptions()">
-            </div>
-            
-            <div class="form-group">
-                <label>Who are you playing with?</label>
-                <div>
-                    <button class="choice-btn" id="btn-real" onclick="selectOpponent('real')">Real Players</button>
-                    <button class="choice-btn selected" id="btn-ai" onclick="selectOpponent('ai')">AI / System</button>
-                </div>
-            </div>
-
-            <!-- Player Pawns Configuration Box -->
-            <div class="form-group pawn-config-box">
-                <label>Configure Player Pawns & Icons</label>
-                <div id="pawn-inputs-container">
-                    <!-- Dynamically populated -->
-                </div>
-            </div>
-
-            <div class="form-group banker-box">
-                <label for="banker-select">Assign Banker</label>
-                <select id="banker-select">
-                    <option value="0">Player 1</option>
-                    <option value="1">Player 2</option>
-                </select>
-                <label style="margin-top: 10px; font-weight: normal; cursor: pointer;">
-                    <input type="checkbox" id="banker-plays" checked> 
-                    The Banker will also play on the board
-                </label>
-            </div>
-
-            <div id="join-code-box" style="display: none;">
-                <p>Share this code to let others join:</p>
-                <div id="the-code">------</div>
-                <button class="choice-btn qr-btn" style="width:100%; margin:0;" onclick="alert('QR scanner coming soon!')">🔗 Generate QR Code</button>
-            </div>
-
-            <button class="start-btn" onclick="startGame('host')">Start Game</button>
+            <div class="form-group"><label>Total Players (2-8)</label><input type="number" id="player-count" min="2" max="8" value="2" onchange="generatePlayerConfigs()"></div>
+            <div class="form-group"><label>Who are you playing with?</label><button class="choice-btn" id="btn-real" onclick="selectOpponent('real')">Real Players</button><button class="choice-btn selected" id="btn-ai" onclick="selectOpponent('ai')">AI / System</button></div>
+            <div class="form-group banker-box"><label for="banker-select">Assign Banker</label><select id="banker-select"></select><label style="margin-top: 15px; font-weight: normal; cursor: pointer; font-size: 14px;"><input type="checkbox" id="banker-plays" checked> The Banker will also play on the board</label></div>
+            <label>Customize Tokens:</label>
+            <div id="player-configs"></div>
+            <button class="start-btn" onclick="startGame('host')">Generate Board & Start</button>
         </div>
 
         <div id="join-ui" style="display: none;">
-            <div class="form-group">
-                <label for="join-code-input">Enter 6-Character Code:</label>
-                <input type="text" id="join-code-input" placeholder="A1B2C3" maxlength="6" style="text-transform: uppercase;">
-            </div>
-            <p style="margin: 15px 0; font-weight: bold; text-align: center;">OR</p>
-            <button class="choice-btn qr-btn" style="padding: 15px;" onclick="alert('Camera opening soon!')">📷 Scan QR Code</button>
+            <div class="form-group"><label>Enter 6-Character Code:</label><input type="text" id="join-code-input" placeholder="A1B2C3" maxlength="6" style="text-transform: uppercase;"></div>
             <button class="start-btn" onclick="startGame('join')">Join Session</button>
         </div>
     </div>
 
-    <!-- GAME SCREEN -->
+    <!-- GAMEPLAY -->
     <div id="game-screen">
         <div id="scoreboard"></div>
-        <div style="margin-bottom: 10px;">
-            <div id="turn-indicator">Loading...</div><br>
-            <button class="start-btn" id="btn-roll" style="width: auto; padding: 10px 20px;" onclick="processTurn()">🎲 Roll Dice</button>
-            <p id="message" style="font-weight: bold; font-size: 16px;">Setting up game...</p>
-            
-            <div class="audio-controls">
-                <button class="audio-btn" id="mute-btn" onclick="toggleMusic()">🔊 Mute Music</button>
+        <div id="game-layout">
+            <div id="left-column">
+                <div style="margin-bottom: 10px;">
+                    <div id="turn-indicator">Loading...</div><br>
+                    <div id="dice-display"><div class="die" id="die1"></div><div class="die" id="die2"></div></div>
+                    <div id="doubles-indicator" style="color: #c0392b; font-weight: bold; font-size: 12px; height: 15px; margin-bottom: 5px;"></div>
+                    <button class="start-btn" id="btn-roll" style="width: auto; padding: 10px 20px; margin-top: 0;" onclick="processTurn()">🎲 Roll Dice</button>
+                    <div id="walking-status" style="font-size: 14px; font-style: italic; color: #7f8c8d; height: 20px; margin-top: 5px;"></div>
+                </div>
+                <div id="board">
+                    <div class="board-center">
+                        <div id="recession-banner">RECESSION</div>
+                        <h2 style="font-size: 30px; color: #2c3e50; margin:0; letter-spacing: 2px; text-align: center;">Regional<br>Realtor</h2>
+                        <h3 id="board-region-title" style="margin:5px 0 0 0; font-size: 14px; color: #c0392b; background: rgba(255,255,255,0.9); padding: 2px 10px; border-radius: 10px;">Region</h3>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div id="board">
-            <div class="board-center">
-                <h2 id="center-board-title">Regional<br>Realtor</h2>
-                <h3 id="center-board-edition">Global Edition</h3>
+
+            <div id="right-column">
+                <h2 style="margin-top: 0; font-size: 18px; text-align: center;">Player Dashboard</h2>
+                <select id="dash-player-select" onchange="renderDashboard()" style="margin-bottom: 15px;"></select>
+                
+                <div class="dash-section">
+                    <h3>Property Portfolio 
+                        <div style="display:flex; gap:5px;">
+                            <button class="bank-btn" onclick="openBankModal()">🏛️ Bank</button>
+                            <button class="trade-btn" onclick="openTradeModal()">🤝 Trade</button>
+                        </div>
+                    </h3>
+                    <div id="dash-properties">No properties owned yet.</div>
+                </div>
+                <div class="dash-section">
+                    <h3>Transaction Ledger</h3>
+                    <ul class="transaction-log" id="dash-transactions"></ul>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- MAIN ACTION MODAL -->
+    <div id="modal-overlay">
+        <div class="modal-box" id="action-modal">
+            <div id="modal-title">Space Name</div>
+            <div id="modal-desc">Description</div>
+            <div id="property-buttons" style="display: none;">
+                <button class="modal-btn btn-buy" id="btn-buy" onclick="buyProperty()">Buy</button>
+                <button class="modal-btn btn-auction" id="btn-auction-open">Auction</button>
+            </div>
+            
+            <div id="payment-buttons" style="display: none;">
+                <button class="modal-btn btn-pay" id="btn-pay-due" onclick="executePayment()">Pay Amount</button>
+                <button class="modal-btn btn-bank" onclick="openBankModal()">🏛️ Open Bank Manager to Raise Funds</button>
+            </div>
+
+            <div id="jail-buttons" style="display: none;">
+                <button class="modal-btn btn-buy" id="btn-jail-fine" style="width: 100%; margin-bottom: 10px;" onclick="payJailFine()">Pay Fine</button>
+                <button class="modal-btn btn-okay" onclick="rollForJail()">Roll for Doubles</button>
+                <button class="modal-btn btn-bank" onclick="openBankModal()">🏛️ Bank Manager</button>
+            </div>
+            
+            <div id="auction-controls">
+                <h4 style="margin-top:0; margin-bottom:5px; color: #d35400;">Live Auction</h4>
+                <div id="auction-seller-badge">Seller: The Bank</div>
+                <div id="auction-status" style="font-weight: bold; margin-bottom: 10px;">Base Price: £X</div>
+                <select id="auction-bidder" style="margin-bottom: 10px;"></select>
+                <label style="font-size: 12px; display: block; margin-bottom: 3px;">Bid Amount (Min +10k):</label>
+                <input type="number" id="auction-price" step="10000" style="margin-bottom: 10px; width:100%;">
+                <button class="modal-btn btn-buy" style="width: 100%; margin: 0;" onclick="placeBid()">Place Bid</button>
+                
+                <!-- Action row visibility toggled once a bid is placed -->
+                <div class="auction-action-row" id="auction-actions-row">
+                    <button class="modal-btn" id="btn-drop-price" style="background:#f39c12; color:white; width:50%; font-size:12px; margin:0;" onclick="dropAuctionPrice()">📉 Drop Price 10%</button>
+                    <button class="modal-btn" id="btn-cancel-auction" style="background:#7f8c8d; color:white; width:50%; font-size:12px; margin:0;" onclick="cancelAuction()">❌ End / Cancel</button>
+                </div>
+                
+                <button class="modal-btn btn-auction" style="width: 100%; margin-top: 15px;" onclick="finalizeAuction()">Award to Highest Bidder</button>
+            </div>
+            <div id="alert-buttons" style="display: none;"><button class="modal-btn btn-okay" onclick="closeModal()">Okay</button></div>
+        </div>
+    </div>
+
+    <!-- BANK MODAL -->
+    <div id="bank-modal-overlay">
+        <div id="bank-modal">
+            <h2 style="margin-top:0; color: #2c3e50; text-align: center;">🏛️ Bank Manager</h2>
+            <p style="font-size: 14px; color: #7f8c8d; text-align: center;">Take loans against properties or construct buildings to raise funds/value.</p>
+            <div id="bank-property-list" style="margin-bottom: 15px;"></div>
+            <div style="text-align: center;"><button class="modal-btn btn-okay" style="width: 50%;" onclick="document.getElementById('bank-modal-overlay').style.display='none';">Done</button></div>
+        </div>
+    </div>
+
+    <!-- TRADE MODAL -->
+    <div id="trade-modal-overlay">
+        <div id="trade-modal">
+            <h2 style="margin-top:0; margin-bottom: 10px; color: #2c3e50; text-align: center;">⚖️ The Trading Post</h2>
+            <div class="trade-tabs"><button class="trade-tab active" id="tab-btn-private" onclick="switchTradeTab('private')">🤫 Discreet Trade</button><button class="trade-tab" id="tab-btn-public" onclick="switchTradeTab('public')">📢 Public Market</button></div>
+            <div id="trade-view-private">
+                <div class="trade-fee-notice">Bank Transfer Fee: 5% of Total Trade Value deducted from BOTH players!</div>
+                <div class="trade-grid">
+                    <div class="trade-col"><h4 id="trade-p1-title">Player 1 Offers:</h4><label>Cash to Pay:</label><input type="number" id="trade-p1-cash" value="0" min="0" step="10000" oninput="calculateTradeFee()"><label style="margin-top: 10px;">Properties to Give:</label><select id="trade-p1-props" multiple onchange="calculateTradeFee()"></select></div>
+                    <div class="trade-col"><h4>Target: <select id="trade-p2-select" onchange="updateTradePartnerUI()" style="width: auto; padding: 2px;"></select></h4><label>Cash Request:</label><input type="number" id="trade-p2-cash" value="0" min="0" step="10000" oninput="calculateTradeFee()"><label style="margin-top: 10px;">Properties Request:</label><select id="trade-p2-props" multiple onchange="calculateTradeFee()"></select></div>
+                </div>
+                <div style="text-align: center; margin-bottom: 15px; font-weight: bold; color: #c0392b;" id="trade-fee-display">Estimated Bank Fee: 0 per player</div>
+                <div style="text-align: center;"><button class="modal-btn btn-buy" onclick="executeTrade()">Sign & Execute</button><button class="modal-btn btn-pay" onclick="document.getElementById('trade-modal-overlay').style.display='none';">Cancel</button></div>
+            </div>
+            <div id="trade-view-public" style="display: none; text-align: center; padding: 20px;">
+                <h3 style="margin-top: 0;">Put a Property on the Block</h3>
+                <div style="max-width: 300px; margin: 0 auto; text-align: left;"><label>Select Property to Sell:</label><select id="market-prop-select" style="margin-bottom: 15px;"></select><label>Minimum Starting Bid:</label><input type="number" id="market-start-bid" value="100000" min="10000" step="10000" style="margin-bottom: 20px;"></div>
+                <button class="modal-btn btn-auction" onclick="startPublicMarket()">Open Bidding!</button><button class="modal-btn btn-pay" onclick="document.getElementById('trade-modal-overlay').style.display='none';">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="news-overlay"><div class="news-banner"><h2 style="margin:0 0 10px 0; color:#c0392b; font-size:28px; text-transform:uppercase; font-weight:900;">🚨 Breaking News 🚨</h2><p id="news-text"></p><button class="modal-btn btn-okay" onclick="document.getElementById('news-overlay').style.display='none';">Dismiss</button></div></div>
+
     <script>
-        let isPlayingAI = true;
-        const JAIL_FINE = 50;
-        const availablePawns = ['🏎️', '🎩', '🐶', '🚢', '🐱', '👞', '🚗', '🚲'];
+        // --- GLOBALS & FORMATTING ---
+        let currencySymbol = '£'; let globalFx = 1; 
+        let START_MONEY = 1500000; let GO_SALARY = 200000; let JAIL_FINE = 50000; let MIN_BID_INC = 10000;
+        
+        let unsoldAuctions = 0; let isRecession = false; let recessionRoundsLeft = 0;
+        let allPropertiesSoldNotified = false;
+        
+        let auctionDropCount = 0; let originalAuctionBasePrice = 0;
+        let currentHighestBid = 0; let currentHighestBidder = null; let auctionBasePrice = 0; let auctionSellerId = null; let activeTradeP1 = 0; let pendingAction = null;
+
+        const fm = (num) => {
+            let sign = num < 0 ? '-' : ''; let val = Math.abs(num);
+            if (val >= 1000000) return sign + currencySymbol + (val / 1000000).toFixed(2).replace(/\.?0+$/, '') + 'M'; 
+            else if (val >= 1000) return sign + currencySymbol + (val / 1000).toFixed(1).replace(/\.?0+$/, '') + 'k';
+            return sign + currencySymbol + val.toLocaleString();
+        };
+
+        const propColors = { saffron: "#F4C430", white: "#ecf0f1", black: "#2c3e50", teal: "#008080", gold: "#FFD700", silver: "#C0C0C0", ruby: "#E74C3C", sapphire: "#2980B9" };
+        const animalAvatars = ['🐶', '🐱', '🦊', '🐻', '🐼', '🦁', '🐸', '🐷', '🦄', '🐧', '🦉', '🦖'];
         const playerColors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#e67e22', '#1abc9c', '#34495e']; 
 
-        // Populate pawn configs and banker options immediately on load
-        function updatePlayerConfigOptions() {
-            let countField = document.getElementById('player-count');
-            let count = parseInt(countField ? countField.value : 2);
-            if (isNaN(count) || count < 2) count = 2;
-            if (count > 8) count = 8;
+        // --- REGION DATABASE ---
+        const regions = {
+            uk: { symbol: '£', bg: '#e6f2ff', name: 'United Kingdom', fx: 1, p: ["Boxpark Shoreditch", "Camden Market", "Brixton Village", "Peckham Levels", "Dalston Curve", "Battersea Power Stn", "The O2 Arena", "Wembley Stadium", "Coal Drops Yard", "Spitalfields", "Borough Market", "Soho Square", "Covent Garden", "Carnaby Street", "The Shard", "The Gherkin", "Canary Wharf", "Notting Hill Gate", "Kensington High St", "Chelsea Harbour", "Knightsbridge", "Billionaires Row"], s: ["Elizabeth Line", "Jubilee Line", "Victoria Line", "Northern Line"], u: ["London Power", "Thames Water"], t: ["Congestion Charge", "ULEZ Charge"] },
+            usa: { symbol: '$', bg: '#fdf5e6', name: 'United States', fx: 1.3, p: ["Venice Beach", "Santa Monica", "Downtown LA", "Hollywood", "Beverly Hills", "Las Vegas Blvd", "Fremont St", "The Strip", "French Quarter", "Bourbon St", "Canal St", "Miami Beach", "South Beach", "Ocean Drive", "Magnificent Mile", "Navy Pier", "Millennium Park", "Times Square", "Broadway", "Wall Street", "5th Avenue", "Central Park"], s: ["JFK Airport", "LAX Airport", "O'Hare Airport", "Hartsfield-Jackson"], u: ["Edison Electric", "Water Works"], t: ["Federal Tax", "Luxury Tax"] },
+            india: { symbol: '₹', bg: '#fff0e6', name: 'India', fx: 100, p: ["Paharganj", "Karol Bagh", "Hauz Khas", "Connaught Place", "Chanakyapuri", "Salt Lake", "Park Street", "New Town", "MG Road", "Indiranagar", "Koramangala", "Banjara Hills", "Jubilee Hills", "Hitech City", "Marina Beach", "Besant Nagar", "ECR", "Bandra", "Juhu", "Andheri", "Malabar Hill", "Altamount Road"], s: ["NDLS Station", "Howrah Station", "KSR Bengaluru", "CSMT Mumbai"], u: ["Adani Power", "Jal Board"], t: ["Income Tax", "GST Levy"] },
+            aus: { symbol: 'A$', bg: '#e6ffe6', name: 'Australia', fx: 1.9, p: ["Gold Coast", "Surfers Paradise", "Byron Bay", "Fremantle", "Cottesloe", "Perth CBD", "Adelaide CBD", "Glenelg", "Barossa", "Hobart", "Salamanca", "Battery Point", "St Kilda", "Fitzroy", "Toorak", "Southbank", "Bondi Beach", "Coogee", "Manly", "Darling Harbour", "Sydney Opera", "Circular Quay"], s: ["Central Stn", "Flinders St", "Southern Cross", "Roma St"], u: ["Origin Energy", "Water Corp"], t: ["Income Tax", "Medicare Levy"] },
+            ger: { symbol: '€', bg: '#ffffe6', name: 'Germany', fx: 1.2, p: ["Kreuzberg", "Neukölln", "Mitte", "St. Pauli", "Sternschanze", "HafenCity", "Altstadt", "Schwabing", "Maxvorstadt", "Bogenhausen", "Ehrenfeld", "Nippes", "Lindenthal", "Sachsenhausen", "Westend", "Nordend", "Plagwitz", "Connewitz", "Südvorstadt", "Charlottenburg", "Kurfürstendamm", "Brandenburger Tor"], s: ["Berlin Hbf", "München Hbf", "Hamburg Hbf", "Frankfurt Hbf"], u: ["E.ON Energy", "Wasserbetriebe"], t: ["Einkommensteuer", "Solidaritätszuschlag"] },
+            fra: { symbol: '€', bg: '#f9ebea', name: 'France (Paris)', fx: 1.2, p: ["Belleville", "Menilmontant", "Bastille", "République", "Le Marais", "Montmartre", "Pigalle", "Batignolles", "Latin Quarter", "Saint-Germain", "Odéon", "Montparnasse", "Vaugirard", "Grenelle", "Invalides", "Trocadéro", "Passy", "Auteuil", "Neuilly", "La Défense", "Champs-Élysées", "Louvre"], s: ["Gare du Nord", "Gare de Lyon", "Gare Montparnasse", "Gare Saint-Lazare"], u: ["EDF Energy", "Eau de Paris"], t: ["Impôt sur le Revenu", "Taxe Foncière"] },
+            rus: { symbol: '₽', bg: '#eaecee', name: 'Russia', fx: 120, p: ["Ostozhenka", "Khamovniki", "Tverskoy", "Presnensky", "Arbat", "Yakimanka", "Zamoskvorechye", "Meshchansky", "Tagansky", "Basmanny", "Krasnoselsky", "Sokolniki", "VDNKh", "Izmailovo", "Lefortovo", "Perovo", "Novogireyevo", "Krylatskoye", "Strogino", "Mitino", "Red Square", "The Kremlin"], s: ["Leningradsky Stn", "Kazansky Stn", "Yaroslavsky Stn", "Kursky Stn"], u: ["Mosenergo", "Mosvodokanal"], t: ["Income Tax", "Property Tax"] },
+            jpn: { symbol: '¥', bg: '#fdedec', name: 'Japan', fx: 200, p: ["Akihabara", "Ueno", "Asakusa", "Shibuya", "Harajuku", "Shinjuku", "Roppongi", "Ginza", "Tsukiji", "Odaiba", "Minato", "Kyoto Old Town", "Gion", "Arashiyama", "Dotonbori", "Namba", "Umeda", "Shin-Osaka", "Kobe Harbor", "Nara Park", "Marunouchi", "Omotesando"], s: ["Tokyo Stn", "Shinjuku Stn", "Kyoto Stn", "Osaka Stn"], u: ["TEPCO", "Tokyo Water"], t: ["Consumption Tax", "Resident Tax"] },
+            chn: { symbol: '¥', bg: '#f5eef8', name: 'China', fx: 9, p: ["Wangfujing", "Sanlitun", "Chaoyang", "Bund", "Pudong", "Xintiandi", "Tianhe", "Yuexiu", "Haizhu", "Nanshan", "Futian", "Luohu", "Jinjiang", "Wuhou", "Qingyang", "Yuzhong", "Jiangbei", "Nan'an", "Gulou", "Siming", "Forbidden City", "Oriental Pearl"], s: ["Beijing Stn", "Shanghai HQ", "Guangzhou Stn", "Shenzhen Stn"], u: ["State Grid", "Water Group"], t: ["Income Tax", "Wealth Tax"] },
+            rsa: { symbol: 'R', bg: '#e8f8f5', name: 'South Africa', fx: 24, p: ["Soweto", "Alexandra", "Maboneng", "Braamfontein", "Sandton", "Rosebank", "Camps Bay", "Clifton", "Sea Point", "V&A Waterfront", "Bo-Kaap", "Observatory", "Woodstock", "Green Point", "Umhlanga", "Ballito", "Morningside", "Berea", "Constantia", "Bishopscourt", "Nelson Mandela Sq", "Table Mountain"], s: ["Park Station", "Cape Town Stn", "Durban Stn", "Pretoria Stn"], u: ["Eskom", "Rand Water"], t: ["SARS Tax", "VAT Levy"] },
+            ita: { symbol: '€', bg: '#ebf5fb', name: 'Italy (Rome)', fx: 1.2, p: ["Trastevere", "Testaccio", "Monti", "Celio", "Esquilino", "San Lorenzo", "Pigneto", "Garbatella", "Ostiense", "Prati", "Borgo", "Trionfale", "Flaminio", "Parioli", "Nomentano", "Salario", "Trieste", "Monteverde", "Gianicolense", "Aurelio", "Colosseum", "Pantheon"], s: ["Termini", "Tiburtina", "Ostiense", "Trastevere"], u: ["Enel", "Acea"], t: ["IRPEF Tax", "IVA Tax"] }
+        };
+
+        let spacesData = []; let chanceCards = []; let chestCards = [];
+
+        function generateBoardData(regionKey) {
+            let r = regions[regionKey]; currencySymbol = r.symbol; globalFx = r.fx;
+            document.body.style.backgroundColor = r.bg; document.getElementById('board-region-title').innerText = r.name;
             
-            let bankerSelect = document.getElementById('banker-select');
-            let pawnContainer = document.getElementById('pawn-inputs-container');
+            let highestTransportPrice = Math.round(500000 * globalFx);
+            START_MONEY = Math.round(highestTransportPrice * 7.5);
             
-            if (!bankerSelect || !pawnContainer) return;
+            GO_SALARY = Math.round(200000 * globalFx); JAIL_FINE = Math.round(50000 * globalFx); MIN_BID_INC = Math.round(10000 * globalFx);
+            document.getElementById('btn-jail-fine').innerText = `Pay ${fm(JAIL_FINE)} Fine`;
 
-            let currentBankerVal = bankerSelect.value;
-            bankerSelect.innerHTML = '';
-            pawnContainer.innerHTML = '';
-
-            for(let i = 0; i < count; i++) {
-                let opt = document.createElement('option');
-                opt.value = i; 
-                opt.innerText = "Player " + (i + 1);
-                bankerSelect.appendChild(opt);
-
-                let row = document.createElement('div');
-                row.className = 'player-pawn-row';
-                row.innerHTML = `
-                    <span>Player ${i + 1}:</span>
-                    <select id="pawn-select-${i}" style="flex:1;">
-                        ${availablePawns.map((p, idx) => `<option value="${p}" ${idx === i ? 'selected' : ''}>Pawn ${p}</option>`).join('')}
-                    </select>
-                `;
-                pawnContainer.appendChild(row);
-            }
-            if(currentBankerVal < count) bankerSelect.value = currentBankerVal;
+            const sp = (n, t, p=0, c=null, rb=0, hp=0) => ({ name: n, type: t, price: Math.round(p*globalFx), owner: null, colorSet: c, rentBase: Math.round(rb*globalFx), houses: 0, housePrice: Math.round(hp*globalFx), isMortgaged: false });
+            spacesData = [
+                sp("START", "go"), sp(r.p[0], "property", 150000, propColors.saffron, 15000, 50000), sp("Social Responsibility", "chest"), sp(r.p[1], "property", 150000, propColors.saffron, 15000, 50000), { name: r.t[0], type: "tax", amount: Math.round(200000*globalFx) }, sp(r.s[0], "station", 500000),
+                sp(r.p[2], "property", 250000, propColors.white, 20000, 50000), sp("Try your luck", "chance"), sp(r.p[3], "property", 250000, propColors.white, 20000, 50000), sp(r.p[4], "property", 300000, propColors.white, 25000, 50000),
+                sp("DETENTION", "jail"), sp(r.p[5], "property", 350000, propColors.black, 30000, 100000), sp(r.u[0], "utility", 300000), sp(r.p[6], "property", 350000, propColors.black, 30000, 100000), sp(r.p[7], "property", 400000, propColors.black, 35000, 100000), sp(r.s[1], "station", 500000),
+                sp(r.p[8], "property", 450000, propColors.teal, 40000, 100000), sp("Social Responsibility", "chest"), sp(r.p[9], "property", 450000, propColors.teal, 40000, 100000), sp(r.p[10], "property", 500000, propColors.teal, 45000, 100000),
+                sp("RECHARGE STATION", "parking"), sp(r.p[11], "property", 550000, propColors.gold, 50000, 150000), sp("Try your luck", "chance"), sp(r.p[12], "property", 550000, propColors.gold, 50000, 150000), sp(r.p[13], "property", 600000, propColors.gold, 55000, 150000), sp(r.s[2], "station", 500000),
+                sp(r.p[14], "property", 650000, propColors.silver, 60000, 150000), sp(r.p[15], "property", 650000, propColors.silver, 60000, 150000), sp(r.u[1], "utility", 300000), sp(r.p[16], "property", 700000, propColors.silver, 65000, 150000),
+                sp("GO TO DETENTION", "gotojail"), sp(r.p[17], "property", 750000, propColors.ruby, 70000, 200000), sp(r.p[18], "property", 750000, propColors.ruby, 70000, 200000), sp("Social Responsibility", "chest"), sp(r.p[19], "property", 800000, propColors.ruby, 80000, 200000), sp(r.s[3], "station", 500000), sp("Try your luck", "chance"),
+                sp(r.p[20], "property", 1000000, propColors.sapphire, 100000, 200000), { name: r.t[1], type: "tax", amount: Math.round(100000*globalFx) }, sp(r.p[21], "property", 1250000, propColors.sapphire, 125000, 200000)
+            ];
+            chanceCards = [ { text: `Advance to START. Collect ${fm(GO_SALARY)}.`, action: "move", target: 0 }, { text: "Go directly to Detention.", action: "jail" }, { text: `Speeding fine. Pay ${fm(Math.round(15000*globalFx))}.`, action: "pay", amount: Math.round(15000*globalFx) } ];
+            chestCards = [ { text: `Server error in your favor. Collect ${fm(Math.round(200000*globalFx))}.`, action: "collect", amount: Math.round(200000*globalFx) } ];
         }
 
-        // Run immediately when script loads to populate default 2 players
-        window.addEventListener('DOMContentLoaded', () => {
-            updatePlayerConfigOptions();
-        });
+        const dicePatterns = [ [], [4], [0, 8], [0, 4, 8], [0, 2, 6, 8], [0, 2, 4, 6, 8], [0, 2, 3, 5, 6, 8] ];
+        function renderDie(elementId, value) { let die = document.getElementById(elementId); die.innerHTML = ''; for(let i=0; i<9; i++) { let cell = document.createElement('div'); if(dicePatterns[value].includes(i)) cell.className = 'dot'; die.appendChild(cell); } }
 
-        function toggleMode(mode) {
-            const hostUI = document.getElementById('host-ui'), joinUI = document.getElementById('join-ui');
-            const btnHostMode = document.getElementById('btn-host-mode'), btnJoinMode = document.getElementById('btn-join-mode');
-            if (mode === 'host') {
-                hostUI.style.display = 'block'; joinUI.style.display = 'none';
-                btnHostMode.classList.add('selected'); btnJoinMode.classList.remove('selected');
-            } else {
-                hostUI.style.display = 'none'; joinUI.style.display = 'block';
-                btnJoinMode.classList.add('selected'); btnHostMode.classList.remove('selected');
+        let players = []; let currentPlayerIndex = 0; let localPlayerId = 0; let isPlayingAI = true;
+
+        function toggleMode(mode) { if (mode === 'host') { document.getElementById('host-ui').style.display = 'block'; document.getElementById('join-ui').style.display = 'none'; document.getElementById('btn-host-mode').classList.add('selected'); document.getElementById('btn-join-mode').classList.remove('selected'); } else { document.getElementById('host-ui').style.display = 'none'; document.getElementById('join-ui').style.display = 'block'; document.getElementById('btn-join-mode').classList.add('selected'); document.getElementById('btn-host-mode').classList.remove('selected'); } }
+        function selectOpponent(type) { isPlayingAI = (type === 'ai'); if(isPlayingAI) { document.getElementById('btn-ai').classList.add('selected'); document.getElementById('btn-real').classList.remove('selected'); } else { document.getElementById('btn-real').classList.add('selected'); document.getElementById('btn-ai').classList.remove('selected'); } }
+        function generatePlayerConfigs() { let count = parseInt(document.getElementById('player-count').value); let container = document.getElementById('player-configs'); let bankerSelect = document.getElementById('banker-select'); container.innerHTML = ""; bankerSelect.innerHTML = ""; for(let i = 0; i < count; i++) { let row = document.createElement('div'); row.className = 'player-config-row'; let nameInput = document.createElement('input'); nameInput.type = "text"; nameInput.id = "p-name-" + i; nameInput.value = "Player " + (i + 1); let animalSelect = document.createElement('select'); animalSelect.id = "p-animal-" + i; animalAvatars.forEach((avatar, index) => { let opt = document.createElement('option'); opt.value = avatar; opt.innerText = avatar; if(index === i % animalAvatars.length) opt.selected = true; animalSelect.appendChild(opt); }); row.appendChild(nameInput); row.appendChild(animalSelect); container.appendChild(row); let bOpt = document.createElement('option'); bOpt.value = i; bOpt.innerText = "Player " + (i + 1); bankerSelect.appendChild(bOpt); } }
+        generatePlayerConfigs();
+
+        function renderPhysicalBoard() {
+            const board = document.getElementById('board'); Array.from(board.children).forEach(c => { if(!c.classList.contains('board-center')) board.removeChild(c); });
+            for (let i = 0; i < spacesData.length; i++) {
+                const space = spacesData[i]; const spaceDiv = document.createElement('div'); spaceDiv.className = 'space'; spaceDiv.id = 'space-' + i;
+                if (space.colorSet) { const colorBar = document.createElement('div'); colorBar.className = 'color-bar'; colorBar.style.backgroundColor = space.colorSet; spaceDiv.appendChild(colorBar); }
+                const textSpan = document.createElement('span'); textSpan.innerText = space.name; spaceDiv.appendChild(textSpan);
+                if (space.type === 'property' || space.type === 'station' || space.type === 'utility') { const img = document.createElement('img'); img.className = 'property-img'; img.src = `https://picsum.photos/seed/${space.name.replace(/\s/g, '')}/80/50`; spaceDiv.appendChild(img); const priceSpan = document.createElement('div'); priceSpan.className = 'price-tag'; priceSpan.innerText = fm(space.price); spaceDiv.appendChild(priceSpan); }
+                const houseCont = document.createElement('div'); houseCont.className = 'house-container'; houseCont.id = 'houses-' + i; spaceDiv.appendChild(houseCont);
+                let row, col; if (i >= 0 && i <= 10) { row = 11; col = 11 - i; } else if (i >= 11 && i <= 20) { col = 1; row = 11 - (i - 10); } else if (i >= 21 && i <= 30) { row = 1; col = i - 19; } else { col = 11; row = i - 29; } spaceDiv.style.gridRow = row; spaceDiv.style.gridColumn = col; board.appendChild(spaceDiv);
             }
         }
 
-        function selectOpponent(type) {
-            const btnReal = document.getElementById('btn-real'), btnAi = document.getElementById('btn-ai'), joinBox = document.getElementById('join-code-box');
-            if (type === 'real') {
-                isPlayingAI = false; btnReal.classList.add('selected'); btnAi.classList.remove('selected');
-                joinBox.style.display = 'block'; document.getElementById('the-code').innerText = "XYZ987"; 
-            } else {
-                isPlayingAI = true; btnAi.classList.add('selected'); btnReal.classList.remove('selected');
-                joinBox.style.display = 'none';
-            }
-        }
-
-        function toggleMusic() {
-            const music = document.getElementById('bg-music');
-            const muteBtn = document.getElementById('mute-btn');
-            if (music.paused) {
-                music.play();
-                muteBtn.innerText = "🔊 Mute Music";
-            } else {
-                music.pause();
-                muteBtn.innerText = "🔇 Play Music";
-            }
-        }
-
-        // --- BOARD DATASETS ---
-        const totalSpaces = 40; 
-        const spaceNamesGlobal = [
-            "START", "Vine St.", "Social Responsibility", "Coventry Ave.", "Income Tax", "Reading Railroad", "Oriental Ave.", "Try your luck", "Vermont Ave.", "Connecticut Ave.",
-            "JAIL", "St. Charles Pl.", "Electric Co.", "States Ave.", "Virginia Ave.", "Penn. Railroad", "St. James Pl.", "Social Responsibility", "Tennessee Ave.", "New York Ave.",
-            "FREE PARKING", "Kentucky Ave.", "Try your luck", "Indiana Ave.", "Illinois Ave.", "B. & O. Railroad", "Atlantic Ave.", "Ventnor Ave.", "Water Works", "Marvin Gardens",
-            "GO TO JAIL", "Pacific Ave.", "North Carolina", "Social Responsibility", "Penn. Ave.", "Short Line RR", "Try your luck", "Park Place", "Luxury Tax", "Boardwalk"
-        ];
-
-        const spaceNamesLondon = [
-            "GO", "Old Kent Road", "Social Responsibility", "Whitechapel Road", "Income Tax", "Kings Cross Stn", "The Angel Islington", "Try your luck", "Euston Road", "Pentonville Road",
-            "JAIL", "Pall Mall", "Electric Co.", "Whitehall", "Northumberland", "Marylebone Stn", "Bow Street", "Social Responsibility", "Marlborough St", "Vine Street",
-            "FREE PARKING", "Strand", "Try your luck", "Fleet Street", "Trafalgar Square", "Fenchurch St", "Leicester Square", "Coventry Street", "Water Works", "Piccadilly",
-            "GO TO JAIL", "Regent Street", "Oxford Street", "Social Responsibility", "Bond Street", "Liverpool St", "Try your luck", "Park Lane", "Super Tax", "Mayfair"
-        ];
-
-        let spaceNames = spaceNamesGlobal;
-        const nonPropertySpaces = [
-            "START", "GO", "Social Responsibility", "Income Tax", "Try your luck", "JAIL", 
-            "FREE PARKING", "GO TO JAIL", "Luxury Tax", "Super Tax"
-        ];
-
-        let players = [];
-        let currentPlayerIndex = 0;
-
-        function buildBoard() {
-            const board = document.getElementById('board');
-            board.innerHTML = `<div class="board-center"><h2 id="center-board-title">Regional<br>Realtor</h2><h3 id="center-board-edition">Global Edition</h3></div>`;
-
-            for (let i = 0; i < totalSpaces; i++) {
-                const spaceDiv = document.createElement('div');
-                spaceDiv.className = 'space'; spaceDiv.id = 'space-' + i;
-                
-                const textSpan = document.createElement('span');
-                textSpan.innerText = spaceNames[i]; spaceDiv.appendChild(textSpan);
-
-                if (!nonPropertySpaces.includes(spaceNames[i])) {
-                    const img = document.createElement('img');
-                    img.className = 'property-img';
-                    let cleanName = spaceNames[i].replace(/\s/g, '');
-                    img.src = `https://picsum.photos/seed/${cleanName}/80/50`;
-                    spaceDiv.appendChild(img);
+        function updateBoardPrices() {
+            for (let i = 0; i < spacesData.length; i++) {
+                let space = spacesData[i];
+                if ((space.type === 'property' || space.type === 'station' || space.type === 'utility') && space.owner === null) {
+                    let priceElem = document.querySelector(`#space-${i} .price-tag`);
+                    if (priceElem) {
+                        let effPrice = getCurrentPrice(space);
+                        priceElem.innerText = fm(effPrice);
+                        priceElem.style.color = isRecession ? '#c0392b' : '#2c3e50';
+                        priceElem.style.fontWeight = isRecession ? 'bold' : 'normal';
+                    }
                 }
-
-                let row, col;
-                if (i >= 0 && i <= 10) { row = 11; col = 11 - i; } 
-                else if (i >= 11 && i <= 20) { col = 1; row = 11 - (i - 10); } 
-                else if (i >= 21 && i <= 30) { row = 1; col = i - 19; } 
-                else { col = 11; row = i - 29; }
-                spaceDiv.style.gridRow = row; spaceDiv.style.gridColumn = col;
-                board.appendChild(spaceDiv);
             }
         }
-        buildBoard();
 
         function startGame(action) {
-            let numPlayers = 2; let bankerIndex = 0; let bankerPlays = true;
-
-            let editionChoice = document.getElementById('board-edition').value;
-            if (editionChoice === 'london') {
-                spaceNames = spaceNamesLondon;
-                document.getElementById('center-board-edition').innerText = "London Edition";
-            } else {
-                spaceNames = spaceNamesGlobal;
-                document.getElementById('center-board-edition').innerText = "Global Edition";
-            }
-            buildBoard();
-
-            if (action === 'host') {
-                numPlayers = parseInt(document.getElementById('player-count').value);
-                bankerIndex = parseInt(document.getElementById('banker-select').value);
-                bankerPlays = document.getElementById('banker-plays').checked;
-                
-                let playingCount = numPlayers - (!bankerPlays ? 1 : 0);
-                if (playingCount < 2) {
-                    alert("You need at least 2 players on the board! Please increase total players or let the Banker play."); return;
-                }
-            } 
-
-            const music = document.getElementById('bg-music');
-            music.volume = 0.35;
-            music.play().catch(error => { console.log("Audio play blocked by browser:", error); });
-
-            let humanAssigned = false;
-            players = [];
-
-            for(let i = 0; i < numPlayers; i++) {
-                let isBanker = (i === bankerIndex);
-                let isPlaying = true;
-                if(isBanker && !bankerPlays) isPlaying = false;
-
-                let isAI = false;
-                if (isPlayingAI) {
-                    if (isPlaying && !humanAssigned) { isAI = false; humanAssigned = true; } 
-                    else if (isPlaying) { isAI = true; }
-                }
-
-                let pawnSelect = document.getElementById(`pawn-select-${i}`);
-                let pawnIcon = pawnSelect ? pawnSelect.value : availablePawns[i];
-
-                players.push({
-                    id: i, name: "Player " + (i + 1), color: playerColors[i], pawn: pawnIcon, position: 0,
-                    isBanker: isBanker, isPlaying: isPlaying, isAI: isAI,
-                    balance: 1500, netWorth: 1500, liquidity: 1500,
-                    inJail: false, propertiesOwned: []
-                });
-
-                if (isPlaying) {
-                    const token = document.createElement('div');
-                    token.className = 'player-token'; token.id = 'token-' + i;
-                    token.style.backgroundColor = playerColors[i];
-                    token.innerHTML = pawnIcon;
-                    token.style.marginLeft = (i * 6) + 'px'; token.style.marginTop = (i * 6) + 'px';
-                    document.getElementById('space-0').appendChild(token);
-                }
-            }
-
-            document.getElementById('setup-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
+            let numPlayers = 2; let bankerIndex = 0; let bankerPlays = true; let selectedRegion = 'uk';
+            if (action === 'host') { numPlayers = parseInt(document.getElementById('player-count').value); bankerIndex = parseInt(document.getElementById('banker-select').value); bankerPlays = document.getElementById('banker-plays').checked; selectedRegion = document.getElementById('region-select').value; localPlayerId = 0; } else { numPlayers = 4; localPlayerId = 1; selectedRegion = document.getElementById('region-select').value; }
             
-            updateScoreboard();
-            updateTurnUI();
+            let audioEl = document.getElementById('bg-audio');
+            if (audioEl) { audioEl.volume = 0.75; audioEl.play().catch(e => console.log("Audio autoplay constrained:", e)); }
+
+            generateBoardData(selectedRegion); renderPhysicalBoard(); renderDie('die1', 6); renderDie('die2', 6); 
+            let humanAssigned = false;
+            for(let i = 0; i < numPlayers; i++) {
+                let pName = document.getElementById('p-name-' + (document.getElementById('p-name-' + i) ? i : 0))?.value || "Player "+(i+1);
+                let pAnimal = document.getElementById('p-animal-' + (document.getElementById('p-animal-' + i) ? i : 0))?.value || animalAvatars[i];
+                let isBanker = (i === bankerIndex); let isPlaying = true; if(isBanker && !bankerPlays) isPlaying = false;
+                let isAI = false; if (isPlayingAI) { if (isPlaying && !humanAssigned) { isAI = false; humanAssigned = true; } else if (isPlaying) { isAI = true; } }
+                players.push({ id: i, name: pName, animal: pAnimal, color: playerColors[i], position: 0, balance: START_MONEY, netWorth: START_MONEY, liquidity: START_MONEY, propertiesOwned: [], transactions: [], inJail: false, jailTurns: 0, doublesCount: 0, rolledDoubles: false, isBanker: isBanker, isPlaying: isPlaying, isAI: isAI, isBankrupt: false, stationsOwned: 0, utilsOwned: 0 });
+                if (isPlaying) { const token = document.createElement('div'); token.className = 'player-token'; token.id = 'token-' + i; token.style.borderColor = playerColors[i]; token.innerText = pAnimal; token.style.marginLeft = ((i%3) * 6) + 'px'; token.style.marginTop = ((i%3) * 6) + 'px'; document.getElementById('space-0').appendChild(token); }
+                let opt1 = document.createElement('option'); opt1.value = i; opt1.innerText = pName; document.getElementById('dash-player-select').appendChild(opt1); let opt2 = document.createElement('option'); opt2.value = i; opt2.innerText = pName; document.getElementById('trade-p2-select').appendChild(opt2); let opt3 = document.createElement('option'); opt3.value = i; opt3.innerText = pName; document.getElementById('auction-bidder').appendChild(opt3);
+                logTransaction(i, START_MONEY, "Starting Balance");
+            }
+            document.getElementById('setup-screen').style.display = 'none'; document.getElementById('game-screen').style.display = 'block'; updateScoreboard(); renderDashboard(); updateTurnUI();
+        }
+
+        // --- LIQUIDITY & BANKRUPTCY ENGINE ---
+        function getLiquidity(player) {
+            let liq = player.balance;
+            player.propertiesOwned.forEach(propIdx => {
+                let space = spacesData[propIdx];
+                if (!space.isMortgaged) liq += Math.floor(space.price / 2);
+                if (space.houses > 0) liq += (space.houses * Math.floor(space.housePrice / 2));
+            });
+            return liq;
+        }
+
+        function handleBankruptcy(bankruptPlayer, creditorId) {
+            bankruptPlayer.isBankrupt = true; bankruptPlayer.isPlaying = false;
+            let token = document.getElementById('token-' + bankruptPlayer.id); if(token) token.remove();
+            
+            if (creditorId === null) {
+                for (let propIdx of bankruptPlayer.propertiesOwned) {
+                    let space = spacesData[propIdx]; space.owner = null; space.isMortgaged = false; space.houses = 0;
+                    document.getElementById('space-' + propIdx).style.boxShadow = 'none'; let hc = document.getElementById('houses-' + propIdx); if(hc) hc.innerHTML = ''; let overlay = document.getElementById('space-' + propIdx).querySelector('.mortgaged-overlay'); if(overlay) overlay.remove();
+                }
+                updateBoardPrices();
+                triggerNews("🚨 BANKRUPTCY 🚨", `${bankruptPlayer.animal} ${bankruptPlayer.name} went bankrupt to the Bank! Their properties are back on the market.`);
+            } else {
+                let creditor = players[creditorId]; creditor.balance += bankruptPlayer.balance; bankruptPlayer.balance = 0;
+                for (let propIdx of bankruptPlayer.propertiesOwned) {
+                    let space = spacesData[propIdx]; space.owner = creditor.id; space.houses = 0; creditor.propertiesOwned.push(propIdx);
+                    markPropertyOwned(propIdx, creditor.color);
+                    if (space.isMortgaged) { let tax = Math.floor((space.price / 2) * 0.10); creditor.balance -= tax; logTransaction(creditor.id, -tax, `Loan Transfer Tax for ${space.name}`); }
+                }
+                triggerNews("🚨 BANKRUPTCY 🚨", `${bankruptPlayer.animal} ${bankruptPlayer.name} went bankrupt to ${creditor.name}! All assets transferred.`);
+                evaluateSynergy(creditor.id);
+            }
+            bankruptPlayer.propertiesOwned = []; closeModal(); updateScoreboard(); renderDashboard();
+        }
+
+        function attemptPayment(amount, creditorId, reason, onSuccess) {
+            let p = players[currentPlayerIndex];
+            if (p.balance >= amount) { p.balance -= amount; if (creditorId !== null) players[creditorId].balance += amount; logTransaction(p.id, -amount, reason); if(creditorId !== null) logTransaction(creditorId, amount, reason); onSuccess(); return; }
+            let liq = getLiquidity(p);
+            if (liq < amount) { if (confirm(`You cannot afford this (${fm(amount)}). You will go BANKRUPT. Proceed?`)) handleBankruptcy(p, creditorId); } 
+            else { alert(`You have ${fm(p.balance)} but owe ${fm(amount)}. Open the Bank Manager (🏛️) to take a Loan against property or sell houses.`); }
+        }
+
+        function aiAttemptPayment(p, amount, creditorId, reason, onSuccess) {
+            if (p.balance >= amount) { p.balance -= amount; if (creditorId !== null) players[creditorId].balance += amount; logTransaction(p.id, -amount, reason); if(creditorId !== null) logTransaction(creditorId, amount, reason); onSuccess(); return; }
+            let liq = getLiquidity(p);
+            if (liq < amount) { handleBankruptcy(p, creditorId); return; }
+            for (let propIdx of p.propertiesOwned) {
+                let space = spacesData[propIdx];
+                if (space.houses > 0) { p.balance += (space.houses * Math.floor(space.housePrice / 2)); space.houses = 0; markPropertyOwned(propIdx, p.color); }
+                if (!space.isMortgaged && p.balance < amount) { space.isMortgaged = true; p.balance += Math.floor(space.price / 2); renderMortgageOverlay(propIdx); logTransaction(p.id, Math.floor(space.price / 2), `Auto-Loan against ${space.name}`); }
+                if (p.balance >= amount) break;
+            }
+            p.balance -= amount; if (creditorId !== null) players[creditorId].balance += amount; logTransaction(p.id, -amount, reason); if(creditorId !== null) logTransaction(creditorId, amount, reason); onSuccess();
+        }
+
+        // --- GLOBAL HELPERS (Recession, Sold Out, Synergy) ---
+        function getCurrentPrice(space) { return isRecession ? Math.floor(space.price * 0.5) : space.price; }
+        function triggerNews(title, msg) { document.getElementById('news-overlay').querySelector('h2').innerText = title; document.getElementById('news-text').innerHTML = msg; document.getElementById('news-overlay').style.display = 'flex'; }
+        
+        function checkAllPropertiesSold() { if (allPropertiesSoldNotified) return; let unsold = spacesData.filter(s => (s.type === 'property' || s.type === 'station' || s.type === 'utility') && s.owner === null); if (unsold.length === 0) { allPropertiesSoldNotified = true; triggerNews("🚨 MARKET SOLD OUT 🚨", "All properties have been claimed!<br><br>The trading and development phase begins now."); } }
+        
+        function evaluateSynergy(playerId) {
+            let p = players[playerId];
+            let stCount = spacesData.filter(s => s.type === 'station' && s.owner === p.id).length;
+            let utCount = spacesData.filter(s => s.type === 'utility' && s.owner === p.id).length;
+            let alerts = [];
+            if (stCount > 1 && stCount > p.stationsOwned) { alerts.push(`🚉 <b>${p.name} acquired multiple Stations!</b><br>Rent is now scaled up heavily for all their transit hubs.`); }
+            if (utCount > 1 && utCount > p.utilsOwned) { alerts.push(`⚡ <b>${p.name} acquired both Utilities!</b><br>Rent is now 10x the dice roll!`); }
+            p.stationsOwned = stCount; p.utilsOwned = utCount;
+            if (alerts.length > 0) { setTimeout(() => triggerNews("🎉 EMPIRE EXPANDING 🎉", alerts.join("<br><br>")), 1500); }
+        }
+
+        function logTransaction(playerId, amount, reason) { let p = players[playerId]; p.transactions.unshift({ amount: amount, reason: reason }); if (p.transactions.length > 20) p.transactions.pop(); renderDashboard(); }
+        
+        function renderDashboard() {
+            let selectedId = parseInt(document.getElementById('dash-player-select').value); let player = players[selectedId];
+            let propDiv = document.getElementById('dash-properties'); propDiv.innerHTML = "";
+            if(player.propertiesOwned.length === 0) propDiv.innerText = "No properties owned yet.";
+            else { 
+                let sortedProps = player.propertiesOwned.slice().sort((a,b) => { let cA = spacesData[a].colorSet || spacesData[a].type; let cB = spacesData[b].colorSet || spacesData[b].type; return cA.localeCompare(cB); });
+                sortedProps.forEach(propIndex => { 
+                    let space = spacesData[propIndex]; let badge = document.createElement('span'); badge.className = 'prop-badge' + (space.isMortgaged ? ' mortgaged' : ''); badge.style.backgroundColor = space.colorSet ? space.colorSet : "#7f8c8d"; badge.style.color = (space.colorSet === propColors.white || space.colorSet === propColors.silver || space.colorSet === propColors.gold || space.colorSet === propColors.saffron) ? '#2c3e50' : 'white'; 
+                    let hIcon = ""; if (space.houses > 0 && space.houses < 5) hIcon = " 🏠x" + space.houses; else if (space.houses === 5) hIcon = " 🌟";
+                    let mIcon = space.isMortgaged ? " [LAP]" : ""; badge.innerText = space.name + hIcon + mIcon; propDiv.appendChild(badge); 
+                }); 
+            }
+            let logUL = document.getElementById('dash-transactions'); logUL.innerHTML = "";
+            if (selectedId === localPlayerId) { player.transactions.forEach(t => { let li = document.createElement('li'); let amtClass = t.amount >= 0 ? 'amt-pos' : 'amt-neg'; let amtSymbol = t.amount >= 0 ? '+' : ''; li.innerHTML = `<span>${t.reason}</span> <span class="${amtClass}">${amtSymbol}${fm(Math.abs(t.amount))}</span>`; logUL.appendChild(li); }); } 
+            else { logUL.innerHTML = "<li style='justify-content:center;'><span class='score-hidden'>🔒 Hidden from opponents</span></li>"; }
         }
 
         function updateScoreboard() {
-            const scoreboard = document.getElementById('scoreboard');
-            scoreboard.innerHTML = ''; 
-            
-            let totalGameWealth = 0;
-            players.forEach(p => {
-                if(p.isPlaying) {
-                    p.netWorth = p.balance; 
-                    p.liquidity = p.balance; 
-                    totalGameWealth += p.netWorth;
-                }
+            const scoreboard = document.getElementById('scoreboard'); scoreboard.innerHTML = ''; let totalGameWealth = 0;
+            players.forEach(p => { 
+                let propertyValue = 0; p.propertiesOwned.forEach(propIndex => { let s = spacesData[propIndex]; if (!s.isMortgaged) propertyValue += s.price + (s.houses * s.housePrice); else propertyValue += (s.price / 2); }); 
+                p.netWorth = p.balance + propertyValue; p.liquidity = p.balance; totalGameWealth += p.netWorth; 
             });
-
             players.forEach(player => {
-                if(player.isPlaying) {
-                    let wealthPercentage = totalGameWealth > 0 ? (player.netWorth / totalGameWealth) * 100 : 0;
-                    let title = "Trainee";
-                    if (wealthPercentage >= 80) title = "Tycoon 👑";
-                    else if (wealthPercentage >= 60) title = "Magnate";
-                    else if (wealthPercentage >= 40) title = "Investor";
-                    else if (wealthPercentage >= 20) title = "Realtor";
-
-                    const scoreDiv = document.createElement('div');
-                    scoreDiv.className = 'player-score';
-                    scoreDiv.style.borderLeft = `8px solid ${player.color}`;
-                    
-                    let bankerIcon = player.isBanker ? ' 🏦' : '';
-                    
-                    scoreDiv.innerHTML = `
-                        <span class="player-title" style="color: ${player.color}">${title}</span>
-                        <div class="player-name">${player.pawn} ${player.name}${bankerIcon}</div>
-                        <div class="score-row main"><span>Cash:</span> <span>£${player.balance}</span></div>
-                        <div class="score-row"><span>Net Worth:</span> <span>£${player.netWorth}</span></div>
-                        <div class="score-row"><span>Liquidity:</span> <span>£${player.liquidity}</span></div>
-                    `;
-                    scoreboard.appendChild(scoreDiv);
-                }
+                if(!player.isPlaying) return;
+                let wealthPercentage = (totalGameWealth > 0) ? (player.netWorth / totalGameWealth) * 100 : 0;
+                let title = "Trainee"; if (wealthPercentage >= 80) title = "Tycoon 👑"; else if (wealthPercentage >= 40) title = "Investor"; else if (wealthPercentage >= 20) title = "Realtor";
+                const scoreDiv = document.createElement('div'); scoreDiv.className = 'player-score'; scoreDiv.style.borderLeft = `8px solid ${player.color}`;
+                let isLocalPlayer = (player.id === localPlayerId); let displayNetWorth = isLocalPlayer ? fm(player.netWorth) : `<span class="score-hidden">🔒 Hidden</span>`;
+                scoreDiv.innerHTML = `<div class="avatar-badge">${player.animal}</div><span class="player-title" style="color: ${player.color}">${title}</span><div class="player-name">${player.name}</div><div class="score-row main"><span>Cash:</span> <span>${fm(player.balance)}</span></div><div class="score-row"><span>Net Worth:</span> <span>${displayNetWorth}</span></div>`;
+                scoreboard.appendChild(scoreDiv);
             });
         }
 
         function updateTurnUI() {
-            let currentPlayer = players[currentPlayerIndex];
-
-            if (!currentPlayer.isPlaying) {
-                currentPlayerIndex++;
-                if (currentPlayerIndex >= players.length) currentPlayerIndex = 0;
-                updateTurnUI(); 
-                return;
-            }
-
-            const indicator = document.getElementById('turn-indicator');
-            const rollBtn = document.getElementById('btn-roll');
-            const msg = document.getElementById('message');
-            
-            let bankerTag = currentPlayer.isBanker ? " (Banker)" : "";
-            indicator.innerText = `${currentPlayer.pawn} ${currentPlayer.name}${bankerTag}'s Turn`;
-            indicator.style.backgroundColor = currentPlayer.color;
-
-            if (currentPlayer.isAI) {
-                rollBtn.disabled = true; 
-                rollBtn.innerText = "🤖 AI is rolling...";
-                msg.innerText = `${currentPlayer.name} is picking up the dice...`;
-                
-                setTimeout(() => { processTurn(); }, 1500); 
-            } else {
-                rollBtn.disabled = false;
-                rollBtn.innerText = "🎲 Roll Dice";
-                msg.innerText = "It's your turn!";
-            }
-        }
-
-        function showModal(title, text, callback) {
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-text').innerText = text;
-            document.getElementById('modal-overlay').style.display = 'flex';
-            window.modalCallback = callback;
-        }
-
-        function closeModal() {
-            document.getElementById('modal-overlay').style.display = 'none';
-            if (window.modalCallback) {
-                window.modalCallback();
-                window.modalCallback = null;
-            }
+            let p = players[currentPlayerIndex];
+            if (!p.isPlaying) { currentPlayerIndex++; if (currentPlayerIndex >= players.length) currentPlayerIndex = 0; updateTurnUI(); return; }
+            document.getElementById('turn-indicator').innerText = `${p.animal} ${p.name}'s Turn`; document.getElementById('turn-indicator').style.backgroundColor = p.color; 
+            document.getElementById('walking-status').innerText = p.rolledDoubles ? "AI rolled Doubles! Going again..." : ""; 
+            document.getElementById('dash-player-select').value = currentPlayerIndex; renderDashboard();
+            let rollBtn = document.getElementById('btn-roll');
+            if (p.isAI) { document.getElementById('property-buttons').style.display='none'; document.getElementById('payment-buttons').style.display='none'; document.getElementById('jail-buttons').style.display='none'; document.getElementById('alert-buttons').style.display='none'; rollBtn.disabled = true; rollBtn.innerText = "🤖 AI Thinking..."; setTimeout(() => { processTurn(); }, 1500); } 
+            else { let isLocalPlayer = (p.id === localPlayerId); if (isLocalPlayer) { rollBtn.disabled = false; if (p.inJail) rollBtn.innerText = "⚖️ Deal with Detention"; else rollBtn.innerText = p.rolledDoubles ? "🎲 Roll Again (Doubles!)" : "🎲 Roll Dice"; } else { rollBtn.disabled = true; rollBtn.innerText = "Waiting for " + p.name; setTimeout(() => { processTurn(); }, 2000); } }
         }
 
         function processTurn() {
-            const p = players[currentPlayerIndex];
-
-            if (p.inJail) {
-                if (p.isAI) {
-                    p.balance -= JAIL_FINE;
-                    p.inJail = false;
+            document.getElementById('btn-roll').disabled = true; const p = players[currentPlayerIndex];
+            
+            if (isRecession) {
+                recessionRoundsLeft--;
+                if(recessionRoundsLeft <= 0) {
+                    isRecession = false; document.getElementById('recession-banner').style.display = 'none'; updateBoardPrices();
+                    let bailoutAmt = Math.round(1000000 * globalFx);
+                    players.forEach(pl => { if(pl.isPlaying) { pl.balance += bailoutAmt; logTransaction(pl.id, bailoutAmt, "Economic Stimulus Bailout"); } });
+                    triggerNews("🏛️ ECONOMIC STIMULUS BAILOUT 🏛️", `The recession persisted for 5 rounds. The Central Bank has awarded ${fm(bailoutAmt)} to all active players and ended the recession!`);
                     updateScoreboard();
-                    
-                    showModal("Detention Escape", `${p.name} paid the £${JAIL_FINE} fine to escape detention! Rolling now...`, () => {
-                        executeRoll(p);
-                    });
-                    return;
-                } else {
-                    showModal("Detention", "You are in Detention. Pay £50 fine to escape.", () => {
-                        p.balance -= JAIL_FINE;
-                        p.inJail = false;
-                        updateScoreboard();
-                        executeRoll(p);
-                    });
-                    return;
                 }
             }
 
+            if (p.inJail) { 
+                if (p.isAI) {
+                    aiAttemptPayment(p, JAIL_FINE, null, "Detention Fine", () => {
+                        p.inJail = false;
+                        updateScoreboard();
+                        executeRoll(p);
+                    }); 
+                    return;
+                } else { 
+                    showModal("Detention", "You are in Detention. How do you want to escape?", "jail"); 
+                    return; 
+                }
+            }
             executeRoll(p);
         }
 
-        function executeRoll(p) {
-            const roll1 = Math.floor(Math.random() * 6) + 1;
-            const roll2 = Math.floor(Math.random() * 6) + 1; 
-            const totalRoll = roll1 + roll2;
+        function payJailFine() {
+            let p = players[currentPlayerIndex];
+            attemptPayment(JAIL_FINE, null, "Detention Fine", () => {
+                p.inJail = false;
+                p.jailTurns = 0;
+                document.getElementById('modal-overlay').style.display = 'none';
+                updateScoreboard();
+                executeRoll(p);
+            });
+        }
+
+        function rollForJail() { 
+            let p = players[currentPlayerIndex]; const r1 = Math.floor(Math.random() * 6) + 1; const r2 = Math.floor(Math.random() * 6) + 1; renderDie('die1', r1); renderDie('die2', r2); 
+            if (r1 === r2) { p.inJail = false; p.jailTurns = 0; document.getElementById('modal-overlay').style.display = 'none'; executeRoll(p, r1, r2); } 
+            else { 
+                p.jailTurns++; 
+                if (p.jailTurns >= 3) { 
+                    alert(`3 failed attempts! Forcing fine payment of ${fm(JAIL_FINE)}...`);
+                    attemptPayment(JAIL_FINE, null, "Forced Detention Fine", () => { p.inJail = false; p.jailTurns = 0; document.getElementById('modal-overlay').style.display = 'none'; executeRoll(p, r1, r2); });
+                } else { alert(`No doubles. (${p.jailTurns}/3). Turn over.`); p.rolledDoubles = false; document.getElementById('modal-overlay').style.display = 'none'; closeModalAndAdvance(); }
+            } 
+        }
+
+        function executeRoll(p, forcedR1=null, forcedR2=null) {
+            const roll1 = forcedR1 || Math.floor(Math.random() * 6) + 1; const roll2 = forcedR2 || Math.floor(Math.random() * 6) + 1; const totalRoll = roll1 + roll2;
+            renderDie('die1', roll1); renderDie('die2', roll2); p.rolledDoubles = (roll1 === roll2);
+            if (p.rolledDoubles) { p.doublesCount++; document.getElementById('doubles-indicator').innerText = `Doubles! (${p.doublesCount}/3)`; if (p.doublesCount === 3) { p.inJail = true; p.position = 10; p.jailTurns = 0; p.doublesCount = 0; p.rolledDoubles = false; document.getElementById('space-10').appendChild(document.getElementById('token-' + p.id)); document.getElementById('doubles-indicator').innerText = "Speeding! Sent to Detention."; setTimeout(() => { closeModalAndAdvance(); }, 1500); return; } } else { p.doublesCount = 0; document.getElementById('doubles-indicator').innerText = ""; }
+            document.getElementById('walking-status').innerText = `${p.animal} rolled a ${totalRoll}...`;
+            const token = document.getElementById('token-' + p.id); token.classList.add('walking'); let currentStep = 0;
+            let walkInterval = setInterval(() => { p.position++; if (p.position >= spacesData.length) { p.position = 0; p.balance += GO_SALARY; logTransaction(p.id, GO_SALARY, "Passed START"); updateScoreboard(); } document.getElementById('space-' + p.position).appendChild(token); currentStep++; if (currentStep >= totalRoll) { clearInterval(walkInterval); token.classList.remove('walking'); document.getElementById('walking-status').innerText = ""; handleLanding(p, spacesData[p.position], p.position, totalRoll); } }, 300);
+        }
+
+        function markPropertyOwned(spaceIndex, colorHex) { 
+            let s = document.getElementById('space-' + spaceIndex); s.style.boxShadow = `inset 0 -6px 0 0 ${colorHex}`; 
+            let spaceData = spacesData[spaceIndex]; let hc = document.getElementById('houses-' + spaceIndex);
+            if (hc) { hc.innerHTML = ''; if(spaceData.houses === 5) { let h = document.createElement('div'); h.className = 'hotel-icon'; hc.appendChild(h); } else { for(let i=0; i<spaceData.houses; i++) { let h = document.createElement('div'); h.className = 'house-icon'; hc.appendChild(h); } } }
+        }
+
+        function renderMortgageOverlay(spaceIndex) { let s = document.getElementById('space-' + spaceIndex); let overlay = s.querySelector('.mortgaged-overlay'); if (spacesData[spaceIndex].isMortgaged) { if (!overlay) { overlay = document.createElement('div'); overlay.className = 'mortgaged-overlay'; overlay.innerText = 'LOAN ACTIVE'; s.appendChild(overlay); } } else { if (overlay) s.removeChild(overlay); } renderDashboard(); updateScoreboard(); }
+        function checkColorMonopoly(ownerPlayer, colorStr) { let spacesOfColor = spacesData.filter(s => s.colorSet === colorStr); let ownedOfColor = spacesOfColor.filter(s => s.owner === ownerPlayer.id); return spacesOfColor.length === ownedOfColor.length; }
+
+        function handleLanding(player, space, spaceIndex, totalRoll) {
+            let desc = ""; let mode = "alert";
+            if (space.type === 'gotojail') { player.inJail = true; player.position = 10; player.jailTurns = 0; player.doublesCount = 0; player.rolledDoubles = false; document.getElementById('space-10').appendChild(document.getElementById('token-' + player.id)); document.getElementById('doubles-indicator').innerText = "Sent to Detention."; setTimeout(() => { closeModalAndAdvance(); }, 1500); return; }
+            if (space.type === 'property' || space.type === 'station' || space.type === 'utility') {
+                if (space.owner === null) { 
+                    let currentPropertyPrice = getCurrentPrice(space);
+                    if (player.isAI) {
+                        let postCash = player.balance - currentPropertyPrice; let willBuy = false;
+                        if (postCash >= (200000 * globalFx)) willBuy = true; else if (postCash >= 0 && Math.random() < 0.8) willBuy = true;
+                        if (willBuy) {
+                            player.balance -= currentPropertyPrice; space.owner = player.id; player.propertiesOwned.push(spaceIndex); logTransaction(player.id, -currentPropertyPrice, `Bought ${space.name}`); unsoldAuctions = 0; markPropertyOwned(spaceIndex, player.color); checkAllPropertiesSold(); evaluateSynergy(player.id);
+                            
+                            if (isRecession) {
+                                isRecession = false; document.getElementById('recession-banner').style.display = 'none'; updateBoardPrices();
+                                triggerNews("📈 MARKET RECOVERY 📈", `${player.animal} ${player.name} bought a property during the recession, instantly restoring normal market prices!`);
+                            }
+
+                            showModal(space.name, `${player.animal} ${player.name} bought this for ${fm(currentPropertyPrice)}.`, "ai-alert"); updateScoreboard(); setTimeout(() => closeModal(), 2500);
+                        } else {
+                            if (isRecession) { showModal(space.name, `${player.animal} ${player.name} declined to buy. Auctions frozen!`, "ai-alert"); setTimeout(() => closeModal(), 2500); } 
+                            else { showModal(space.name, `${player.animal} ${player.name} declined to buy. Proceeding to Auction!`, "ai-alert"); pendingAction = { index: spaceIndex }; setTimeout(() => openAuction(), 2500); }
+                        }
+                        return;
+                    } else { desc = `Unowned. Buy it for ${fm(currentPropertyPrice)}?`; mode = "property"; pendingAction = { index: spaceIndex }; document.getElementById('btn-buy').innerText = `Buy for ${fm(currentPropertyPrice)}`; let actionBtn = document.getElementById('btn-auction-open'); if (isRecession) { actionBtn.innerText = "Pass"; actionBtn.style.backgroundColor = "#c0392b"; actionBtn.onclick = () => { closeModal(); }; desc += "\n(Auctions frozen during Recession)"; } else { actionBtn.innerText = "Auction"; actionBtn.style.backgroundColor = "#e67e22"; actionBtn.onclick = () => { openAuction(); }; } }
+                } 
+                else if (space.owner !== player.id) {
+                    if (space.isMortgaged) { desc = `Owned by ${players[space.owner].name}, but has a Loan against property. No rent due!`; if (player.isAI) { showModal(space.name, desc, "ai-alert"); setTimeout(() => closeModal(), 2000); return; } } 
+                    else {
+                        let owner = players[space.owner]; let rent = 0;
+                        if (space.type === 'property') { rent = space.rentBase; let rentMultipliers = [1, 5, 15, 45, 60, 75]; if (space.houses > 0) rent = rent * rentMultipliers[space.houses]; else if (checkColorMonopoly(owner, space.colorSet)) rent = rent * 2; } 
+                        else if (space.type === 'station') { let stationCount = spacesData.filter(s => s.type === 'station' && s.owner === owner.id).length; rent = Math.round(50000*globalFx) * Math.pow(2, stationCount - 1); } 
+                        else if (space.type === 'utility') { let utilCount = spacesData.filter(s => s.type === 'utility' && s.owner === owner.id).length; rent = Math.round((utilCount === 2 ? 10000 : 5000)*globalFx) * totalRoll; }
+                        
+                        if (player.isAI) { aiAttemptPayment(player, rent, owner.id, "Rent", () => { showModal(space.name, `${player.animal} ${player.name} paid ${fm(rent)} rent to ${owner.name}.`, "ai-alert"); updateScoreboard(); setTimeout(() => closeModal(), 2500); }); return; } 
+                        else { desc = `Owned by ${owner.name}. You owe ${fm(rent)} in rent.`; mode = "payment"; pendingAction = { amount: rent, ownerId: owner.id, reason: "Rent" }; document.getElementById('btn-pay-due').innerText = `Pay ${fm(rent)}`; }
+                    }
+                } else { desc = "You own this property. Welcome home."; if (player.isAI) { showModal(space.name, desc, "ai-alert"); setTimeout(() => closeModal(), 1500); return; } }
+            } else if (space.type === 'chance' || space.type === 'chest') {
+                let cardArray = (space.type === 'chance') ? chanceCards : chestCards; let card = cardArray[Math.floor(Math.random() * cardArray.length)]; desc = card.text;
+                if(card.action === 'collect') { player.balance += card.amount; logTransaction(player.id, card.amount, "Card"); if(player.isAI) { showModal(space.name, desc, "ai-alert"); updateScoreboard(); setTimeout(() => closeModal(), 2500); return;} }
+                if(card.action === 'pay') { 
+                    if(player.isAI) { aiAttemptPayment(player, card.amount, null, "Card", () => { showModal(space.name, desc, "ai-alert"); updateScoreboard(); setTimeout(() => closeModal(), 2500); }); return; }
+                    else { mode = "payment"; pendingAction = { amount: card.amount, ownerId: null, reason: "Card" }; document.getElementById('btn-pay-due').innerText = `Pay ${fm(card.amount)}`; }
+                }
+                if(card.action === 'jail') { player.inJail = true; player.position = 10; player.jailTurns = 0; player.doublesCount = 0; player.rolledDoubles = false; document.getElementById('space-10').appendChild(document.getElementById('token-' + player.id)); setTimeout(() => { closeModalAndAdvance(); }, 2500); if(player.isAI){ showModal(space.name, desc, "ai-alert"); return;} }
+                if(card.action === 'move') { player.position = card.target; document.getElementById('space-' + player.position).appendChild(document.getElementById('token-' + player.id)); if(card.target === 0) { player.balance += GO_SALARY; logTransaction(player.id, GO_SALARY, "Passed START"); } if(player.isAI){ showModal(space.name, desc, "ai-alert"); updateScoreboard(); setTimeout(() => closeModal(), 2500); return;} }
+            } else if (space.type === 'tax') { 
+                if(player.isAI) { aiAttemptPayment(player, space.amount, null, space.name, () => { showModal(space.name, `Paid ${fm(space.amount)}.`, "ai-alert"); updateScoreboard(); setTimeout(() => closeModal(), 2500); }); return; }
+                else { desc = `Pay ${fm(space.amount)}.`; mode = "payment"; pendingAction = { amount: space.amount, ownerId: null, reason: space.name }; document.getElementById('btn-pay-due').innerText = `Pay ${fm(space.amount)}`; }
+            } else { desc = "Rest easy."; if (player.isAI) { showModal(space.name, desc, "ai-alert"); setTimeout(() => closeModal(), 1500); return; } }
+            showModal(space.name, desc, mode); updateScoreboard();
+        }
+
+        function showModal(title, desc, mode) {
+            document.getElementById('property-buttons').style.display = 'none'; document.getElementById('alert-buttons').style.display = 'none'; document.getElementById('jail-buttons').style.display = 'none'; document.getElementById('auction-controls').style.display = 'none'; document.getElementById('payment-buttons').style.display = 'none';
+            if (mode === "property") document.getElementById('property-buttons').style.display = 'block'; 
+            else if (mode === "payment") document.getElementById('payment-buttons').style.display = 'block'; 
+            else if (mode === "jail") document.getElementById('jail-buttons').style.display = 'block'; 
+            else if (mode === "alert" || mode === "ai-alert") document.getElementById('alert-buttons').style.display = 'block';
+            document.getElementById('modal-title').innerText = title; document.getElementById('modal-desc').innerHTML = desc; document.getElementById('modal-overlay').style.display = 'flex';
+        }
+
+        function executePayment() { attemptPayment(pendingAction.amount, pendingAction.ownerId, pendingAction.reason, () => { closeModal(); }); }
+        
+        function buyProperty() { 
+            let spaceIndex = pendingAction.index; let space = spacesData[spaceIndex]; let player = players[currentPlayerIndex]; 
+            let currentPropertyPrice = getCurrentPrice(space); 
+            if (player.balance >= currentPropertyPrice) { 
+                player.balance -= currentPropertyPrice; space.owner = player.id; player.propertiesOwned.push(spaceIndex); 
+                logTransaction(player.id, -currentPropertyPrice, `Purchased ${space.name}`); markPropertyOwned(spaceIndex, player.color); 
+                unsoldAuctions = 0; checkAllPropertiesSold(); evaluateSynergy(player.id); 
+                
+                if (isRecession) {
+                    isRecession = false; document.getElementById('recession-banner').style.display = 'none'; updateBoardPrices();
+                    triggerNews("📈 MARKET RECOVERY 📈", `${player.animal} ${player.name} bought a property during the recession, instantly restoring normal market prices!`);
+                }
+
+                closeModal(); 
+            } else { alert("Not enough cash!"); } 
+        }
+
+        function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; updateScoreboard(); let p = players[currentPlayerIndex]; if (!p.rolledDoubles) { closeModalAndAdvance(); } else { updateTurnUI(); } }
+        function closeModalAndAdvance() { currentPlayerIndex++; if (currentPlayerIndex >= players.length) currentPlayerIndex = 0; updateTurnUI(); }
+
+        // --- PUBLIC AUCTION ENGINE ---
+        function openAuction() {
+            document.getElementById('property-buttons').style.display = 'none'; document.getElementById('alert-buttons').style.display = 'none'; document.getElementById('jail-buttons').style.display = 'none'; document.getElementById('payment-buttons').style.display='none'; document.getElementById('auction-controls').style.display = 'block';
             
-            p.position += totalRoll;
+            // Ensure drop/cancel action controls are visible at auction start
+            document.getElementById('auction-actions-row').style.display = 'flex';
+
+            let space = spacesData[pendingAction.index]; auctionSellerId = null; document.getElementById('auction-seller-badge').innerText = "Seller: The Bank"; document.getElementById('auction-seller-badge').style.backgroundColor = "#c0392b";
+            auctionBasePrice = Math.ceil((getCurrentPrice(space) * 1.10)/MIN_BID_INC) * MIN_BID_INC; setupAuctionUI(); document.getElementById('modal-title').innerText = space.name; document.getElementById('modal-desc').innerText = "Live Bidding is open to all players!"; document.getElementById('modal-overlay').style.display = 'flex';
+            checkAiBids();
+        }
+        function startPublicMarket() {
+            if (isRecession) { alert("The Public Market is closed during a recession! You can only make private trades."); return; }
+            let mktSelect = document.getElementById('market-prop-select'); if(mktSelect.options.length === 0 || mktSelect.value === "No properties to sell") return;
+            let propIndex = parseInt(mktSelect.value); let startBid = parseInt(document.getElementById('market-start-bid').value) || MIN_BID_INC;
+            pendingAction = { index: propIndex }; auctionSellerId = activeTradeP1; let seller = players[auctionSellerId]; document.getElementById('trade-modal-overlay').style.display = 'none';
+            document.getElementById('auction-seller-badge').innerText = `Seller: ${seller.name}`; document.getElementById('auction-seller-badge').style.backgroundColor = seller.color; auctionBasePrice = startBid;
+            document.getElementById('property-buttons').style.display = 'none'; document.getElementById('alert-buttons').style.display = 'none'; document.getElementById('payment-buttons').style.display='none'; document.getElementById('jail-buttons').style.display = 'none'; document.getElementById('auction-controls').style.display = 'block';
             
-            if (p.position >= totalSpaces) {
-                p.position -= totalSpaces;
-                p.balance += 200; 
-                updateScoreboard(); 
+            // Ensure drop/cancel action controls are visible at auction start
+            document.getElementById('auction-actions-row').style.display = 'flex';
+
+            document.getElementById('modal-title').innerText = spacesData[propIndex].name; document.getElementById('modal-desc').innerText = `${seller.name} placed this on the open market!`; document.getElementById('modal-overlay').style.display = 'flex'; setupAuctionUI();
+            checkAiBids();
+        }
+        function setupAuctionUI() {
+            auctionDropCount = 0; originalAuctionBasePrice = auctionBasePrice;
+            document.getElementById('btn-drop-price').innerText = "📉 Drop Price 10%";
+            let bidderSelect = document.getElementById('auction-bidder'); bidderSelect.innerHTML = '';
+            for(let i=0; i<players.length; i++) { if(i !== auctionSellerId && !players[i].isBankrupt) { let opt = document.createElement('option'); opt.value = i; opt.innerText = players[i].name; bidderSelect.appendChild(opt); } }
+            currentHighestBid = auctionBasePrice - MIN_BID_INC; currentHighestBidder = null; document.getElementById('auction-status').innerText = `Base Price: ${fm(auctionBasePrice)}`; document.getElementById('auction-price').value = auctionBasePrice; document.getElementById('auction-price').min = auctionBasePrice; document.getElementById('auction-price').step = MIN_BID_INC; 
+        }
+        function placeBid() { 
+            let bidderId = parseInt(document.getElementById('auction-bidder').value); let bidAmt = parseInt(document.getElementById('auction-price').value); let minAllowed = currentHighestBid + MIN_BID_INC; 
+            if (bidAmt < minAllowed) { alert(`Min bid is ${fm(minAllowed)}`); return; } if (players[bidderId].balance < bidAmt) { alert(`Not enough cash!`); return; } 
+            currentHighestBid = bidAmt; currentHighestBidder = bidderId; document.getElementById('auction-status').innerText = `Highest Bid: ${fm(currentHighestBid)} (by ${players[currentHighestBidder].name})`; document.getElementById('auction-price').value = currentHighestBid + MIN_BID_INC; document.getElementById('auction-price').min = currentHighestBid + MIN_BID_INC; 
+            
+            // Once a bid is placed, lock in the auction by hiding drop-price and cancel options
+            document.getElementById('auction-actions-row').style.display = 'none';
+
+            checkAiBids();
+        }
+        function dropAuctionPrice() { 
+            // Prevent dropping price if bidding has already started
+            if (currentHighestBidder !== null) return;
+
+            auctionDropCount++;
+            if (auctionDropCount > 4) {
+                document.getElementById('modal-overlay').style.display = 'none';
+                let msg = auctionSellerId !== null ? "Auction collapsed. Property remains with the seller." : "Auction collapsed. Property remains unowned.";
+                alert(msg);
+                if (!isRecession) {
+                    isRecession = true; recessionRoundsLeft = 5; unsoldAuctions = 0; 
+                    document.getElementById('recession-banner').style.display = 'block';
+                    updateBoardPrices();
+                    triggerNews("📉 ECONOMIC RECESSION 📉", "Auction prices dropped more than 40%! The Bank has declared a recession. Property values slashed by 50% until a property is bought or 5 rounds pass!");
+                }
+                closeModal(); return;
+            }
+            let dropAmount = originalAuctionBasePrice * (0.10 * auctionDropCount);
+            auctionBasePrice = Math.floor((originalAuctionBasePrice - dropAmount)/MIN_BID_INC)*MIN_BID_INC; 
+            currentHighestBid = auctionBasePrice - MIN_BID_INC; 
+            document.getElementById('btn-drop-price').innerText = `📉 Drop Price 10% (${auctionDropCount}/4)`;
+            document.getElementById('auction-status').innerText = `Base Price dropped (-${auctionDropCount*10}%): ${fm(auctionBasePrice)}`; 
+            document.getElementById('auction-price').value = auctionBasePrice; document.getElementById('auction-price').min = auctionBasePrice; 
+            checkAiBids();
+        }
+        function cancelAuction() {
+            // Prevent cancelling if bidding has already started
+            if (currentHighestBidder !== null) return;
+
+            document.getElementById('modal-overlay').style.display = 'none';
+            if (auctionSellerId !== null) { alert("Auction cancelled. Property remains with the seller."); } 
+            else { 
+                alert("Auction cancelled. Property remains unowned."); 
+                if (!isRecession) { 
+                    unsoldAuctions++; 
+                    if (unsoldAuctions >= (players.length * 2)) { 
+                        isRecession = true; recessionRoundsLeft = 5; unsoldAuctions = 0; 
+                        document.getElementById('recession-banner').style.display = 'block'; 
+                        updateBoardPrices();
+                        triggerNews("📉 ECONOMIC RECESSION 📉", "Properties are not selling! The Bank has slashed all property values by 50% until a property is bought or 5 rounds pass!"); 
+                    } 
+                }
+            }
+            closeModal();
+        }
+        function finalizeAuction() { 
+            if (currentHighestBidder === null) { cancelAuction(); return; } 
+            let spaceIndex = pendingAction.index; let space = spacesData[spaceIndex]; let winner = players[currentHighestBidder]; 
+            
+            if (isRecession) {
+                isRecession = false; document.getElementById('recession-banner').style.display = 'none'; updateBoardPrices();
+                triggerNews("📈 MARKET RECOVERY 📈", `${winner.name} won an auction during the recession, instantly restoring normal market prices!`);
             }
 
-            if (p.position === 30) {
-                p.position = 10; 
-                p.inJail = true;
-                document.getElementById('message').innerText = `${p.name} was sent to Detention!`;
+            if (auctionSellerId === null) {
+                winner.balance -= currentHighestBid; space.owner = winner.id; winner.propertiesOwned.push(spaceIndex); logTransaction(winner.id, -currentHighestBid, `Won ${space.name} at auction`); markPropertyOwned(spaceIndex, winner.color); unsoldAuctions = 0; checkAllPropertiesSold(); evaluateSynergy(winner.id); closeModal();
             } else {
-                const spaceName = spaceNames[p.position];
-                document.getElementById('message').innerText = `${p.name} rolled ${totalRoll} and landed on ${spaceName}.`;
+                let seller = players[auctionSellerId]; let fee = Math.ceil((currentHighestBid * 0.05)/MIN_BID_INC)*MIN_BID_INC;
+                if (seller.balance < fee) { alert(`${seller.name} cannot afford the ${fm(fee)} broker fee! Cancelled.`); document.getElementById('modal-overlay').style.display = 'none'; return; }
+                if (winner.balance < (currentHighestBid + fee)) { alert(`${winner.name} cannot afford bid + ${fm(fee)} fee!`); return; }
+                winner.balance -= (currentHighestBid + fee); seller.balance += (currentHighestBid - fee); seller.propertiesOwned = seller.propertiesOwned.filter(id => id !== spaceIndex); winner.propertiesOwned.push(spaceIndex); space.owner = winner.id; markPropertyOwned(spaceIndex, winner.color);
+                logTransaction(winner.id, -currentHighestBid, `Bought ${space.name}`); logTransaction(winner.id, -fee, `Auction Fee`); logTransaction(seller.id, currentHighestBid, `Sold ${space.name}`); logTransaction(seller.id, -fee, `Auction Fee`);
+                document.getElementById('modal-overlay').style.display = 'none'; updateScoreboard(); renderDashboard(); unsoldAuctions = 0; checkAllPropertiesSold(); evaluateSynergy(winner.id); triggerNews("SOLD AT AUCTION", `${winner.name} won the public auction for ${space.name}! <br>Final Bid: ${fm(currentHighestBid)}`);
             }
+        }
 
-            const targetSpace = document.getElementById('space-' + p.position);
-            const tokenToMove = document.getElementById('token-' + p.id);
-            targetSpace.appendChild(tokenToMove);
+        // --- AI AUCTION BIDDING BRAIN ---
+        function checkAiBids() {
+            setTimeout(() => {
+                if (document.getElementById('auction-controls').style.display !== 'block') return;
+                let nextBidAmt = currentHighestBid + MIN_BID_INC;
+                for (let p of players) {
+                    if (p.isAI && p.isPlaying && !p.isBankrupt && p.id !== auctionSellerId && p.id !== currentHighestBidder) {
+                        if (p.balance >= nextBidAmt) {
+                            let postCash = p.balance - nextBidAmt; let willBid = false;
+                            if (postCash >= (200000 * globalFx)) willBid = true; else if (postCash >= 0 && Math.random() < 0.8) willBid = true;
 
-            currentPlayerIndex++;
-            if (currentPlayerIndex >= players.length) {
-                currentPlayerIndex = 0;
+                            if (willBid) {
+                                currentHighestBid = nextBidAmt; currentHighestBidder = p.id;
+                                document.getElementById('auction-status').innerText = `Highest Bid: ${fm(currentHighestBid)} (by ${p.animal} ${p.name})`;
+                                document.getElementById('auction-price').value = currentHighestBid + MIN_BID_INC; document.getElementById('auction-price').min = currentHighestBid + MIN_BID_INC;
+                                
+                                // Once an AI places a bid, hide drop-price and cancel options too
+                                document.getElementById('auction-actions-row').style.display = 'none';
+
+                                checkAiBids(); return;
+                            }
+                        }
+                    }
+                }
+            }, 1200);
+        }
+
+        // --- BANK MANAGER (MORTGAGES & HOUSES) ---
+        function openBankModal() {
+            let activeId = parseInt(document.getElementById('dash-player-select').value); if (activeId !== localPlayerId) { alert("You can only manage your own Bank account."); return; }
+            let player = players[activeId]; let listDiv = document.getElementById('bank-property-list'); listDiv.innerHTML = '';
+            if (player.propertiesOwned.length === 0) { listDiv.innerText = "No properties owned to manage."; }
+            else {
+                let sortedProps = player.propertiesOwned.slice().sort((a,b) => { let cA = spacesData[a].colorSet || spacesData[a].type; let cB = spacesData[b].colorSet || spacesData[b].type; return cA.localeCompare(cB); });
+                sortedProps.forEach(propIndex => {
+                    let space = spacesData[propIndex]; let row = document.createElement('div'); row.className = 'bank-item-row';
+                    let titleSpan = document.createElement('span'); titleSpan.innerHTML = `<strong>${space.name}</strong>`; let btnsDiv = document.createElement('div');
+                    if (space.type === 'property' && checkColorMonopoly(player, space.colorSet) && !space.isMortgaged) {
+                        let buildBtn = document.createElement('button');
+                        if (space.houses < 5) {
+                            buildBtn.style.background = '#27ae60'; buildBtn.style.color = 'white'; buildBtn.style.marginRight = '5px'; let hType = space.houses === 4 ? "Hotel" : "House"; buildBtn.innerText = `Build ${hType} (${fm(space.housePrice)})`;
+                            buildBtn.onclick = () => { if (player.balance >= space.housePrice) { player.balance -= space.housePrice; space.houses++; logTransaction(player.id, -space.housePrice, `Built on ${space.name}`); markPropertyOwned(propIndex, player.color); openBankModal(); updateScoreboard(); } else { alert("Not enough cash to build!"); } };
+                        } else { buildBtn.style.background = '#bdc3c7'; buildBtn.innerText = "Max Development"; buildBtn.disabled = true; buildBtn.style.marginRight = '5px'; }
+                        btnsDiv.appendChild(buildBtn);
+                    }
+                    if (space.houses > 0) { 
+                        let sellHouseBtn = document.createElement('button'); sellHouseBtn.style.background = '#f39c12'; sellHouseBtn.style.color = 'white'; sellHouseBtn.innerText = `Sell House (+${fm(Math.floor(space.housePrice/2))})`;
+                        sellHouseBtn.onclick = () => { player.balance += Math.floor(space.housePrice/2); space.houses--; logTransaction(player.id, Math.floor(space.housePrice/2), `Sold House on ${space.name}`); markPropertyOwned(propIndex, player.color); openBankModal(); updateScoreboard(); };
+                        btnsDiv.appendChild(sellHouseBtn);
+                    } else {
+                        let mortBtn = document.createElement('button');
+                        if (!space.isMortgaged) {
+                            let mortVal = Math.floor(space.price / 2); mortBtn.style.background = '#c0392b'; mortBtn.style.color = 'white'; mortBtn.innerText = `Take Loan (+${fm(mortVal)})`;
+                            mortBtn.onclick = () => { player.balance += mortVal; space.isMortgaged = true; logTransaction(player.id, mortVal, `Loan against ${space.name}`); renderMortgageOverlay(propIndex); openBankModal(); };
+                        } else {
+                            let unmortVal = Math.floor((space.price / 2) * 1.1); mortBtn.style.background = '#f39c12'; mortBtn.style.color = 'white'; mortBtn.innerText = `Repay Loan (-${fm(unmortVal)})`;
+                            mortBtn.onclick = () => { if (player.balance >= unmortVal) { player.balance -= unmortVal; space.isMortgaged = false; logTransaction(player.id, -unmortVal, `Repaid loan on ${space.name}`); renderMortgageOverlay(propIndex); openBankModal(); } else { alert("Not enough cash!"); } };
+                        }
+                        btnsDiv.appendChild(mortBtn);
+                    }
+                    row.appendChild(titleSpan); row.appendChild(btnsDiv); listDiv.appendChild(row);
+                });
             }
+            document.getElementById('bank-modal-overlay').style.display = 'flex';
+        }
 
-            updateTurnUI();
+        // --- TRADING POST ---
+        function switchTradeTab(mode) { document.getElementById('tab-btn-private').classList.remove('active'); document.getElementById('tab-btn-public').classList.remove('active'); document.getElementById('trade-view-private').style.display = 'none'; document.getElementById('trade-view-public').style.display = 'none'; if (mode === 'private') { document.getElementById('tab-btn-private').classList.add('active'); document.getElementById('trade-view-private').style.display = 'block'; } else { document.getElementById('tab-btn-public').classList.add('active'); document.getElementById('trade-view-public').style.display = 'block'; } }
+        function openTradeModal() {
+            activeTradeP1 = parseInt(document.getElementById('dash-player-select').value); let p1 = players[activeTradeP1];
+            if (activeTradeP1 !== localPlayerId) { alert("You can only trade from your own dashboard."); return; }
+            document.getElementById('trade-p1-title').innerText = `${p1.name} Offers:`; document.getElementById('trade-p1-cash').value = 0; document.getElementById('trade-p2-cash').value = 0;
+            let p1Select = document.getElementById('trade-p1-props'); p1Select.innerHTML = ''; p1.propertiesOwned.forEach(propIndex => { let opt = document.createElement('option'); opt.value = propIndex; opt.innerText = spacesData[propIndex].name + ` (${fm(spacesData[propIndex].price)})` + (spacesData[propIndex].isMortgaged ? ' [LAP]' : ''); p1Select.appendChild(opt); });
+            let p2Dropdown = document.getElementById('trade-p2-select'); if (parseInt(p2Dropdown.value) === activeTradeP1) { p2Dropdown.value = (activeTradeP1 + 1) % players.length; } updateTradePartnerUI();
+            let mktSelect = document.getElementById('market-prop-select'); mktSelect.innerHTML = '';
+            if (p1.propertiesOwned.length === 0) { let opt = document.createElement('option'); opt.innerText = "No properties to sell"; mktSelect.appendChild(opt); } else { p1.propertiesOwned.forEach(propIndex => { let opt = document.createElement('option'); opt.value = propIndex; opt.innerText = spacesData[propIndex].name; mktSelect.appendChild(opt); }); }
+            switchTradeTab('private'); document.getElementById('trade-modal-overlay').style.display = 'flex'; document.getElementById('trade-p1-cash').step = MIN_BID_INC; document.getElementById('trade-p2-cash').step = MIN_BID_INC; document.getElementById('market-start-bid').step = MIN_BID_INC; document.getElementById('market-start-bid').value = MIN_BID_INC * 10;
+        }
+        function updateTradePartnerUI() {
+            let p2Id = parseInt(document.getElementById('trade-p2-select').value); if (p2Id === activeTradeP1) { alert("You cannot trade with yourself!"); document.getElementById('trade-p2-select').value = (activeTradeP1 + 1) % players.length; updateTradePartnerUI(); return; }
+            let p2 = players[p2Id]; let p2Select = document.getElementById('trade-p2-props'); p2Select.innerHTML = '';
+            p2.propertiesOwned.forEach(propIndex => { let opt = document.createElement('option'); opt.value = propIndex; opt.innerText = spacesData[propIndex].name + ` (${fm(spacesData[propIndex].price)})` + (spacesData[propIndex].isMortgaged ? ' [LAP]' : ''); p2Select.appendChild(opt); }); calculateTradeFee();
+        }
+        function calculateTradeFee() {
+            let p1Cash = parseInt(document.getElementById('trade-p1-cash').value) || 0; let p2Cash = parseInt(document.getElementById('trade-p2-cash').value) || 0;
+            let p1PropsValue = 0; let p1Select = document.getElementById('trade-p1-props'); for (let opt of p1Select.selectedOptions) p1PropsValue += spacesData[parseInt(opt.value)].price;
+            let p2PropsValue = 0; let p2Select = document.getElementById('trade-p2-props'); for (let opt of p2Select.selectedOptions) p2PropsValue += spacesData[parseInt(opt.value)].price;
+            let tradeValue = Math.max(p1Cash + p1PropsValue, p2Cash + p2PropsValue); let fee = Math.ceil((tradeValue * 0.05)/MIN_BID_INC) * MIN_BID_INC; 
+            document.getElementById('trade-fee-display').innerText = `Estimated Bank Transfer Fee: ${fm(fee)} deducted from BOTH players`; return fee;
+        }
+        function executeTrade() {
+            let p1 = players[activeTradeP1]; let p2Id = parseInt(document.getElementById('trade-p2-select').value); let p2 = players[p2Id];
+            let p1Cash = parseInt(document.getElementById('trade-p1-cash').value) || 0; let p2Cash = parseInt(document.getElementById('trade-p2-cash').value) || 0; let fee = calculateTradeFee();
+            if (p1.balance < (p1Cash + fee)) { alert(`${p1.name} cannot afford offer + ${fm(fee)} fee!`); return; } if (p2.balance < (p2Cash + fee)) { alert(`${p2.name} cannot afford offer + ${fm(fee)} fee!`); return; }
+
+            let p1Select = document.getElementById('trade-p1-props'); let p1TransferCount = 0;
+            for (let opt of p1Select.selectedOptions) { 
+                let propIdx = parseInt(opt.value); spacesData[propIdx].owner = p2.id; p1.propertiesOwned = p1.propertiesOwned.filter(id => id !== propIdx); p2.propertiesOwned.push(propIdx); p1TransferCount++; markPropertyOwned(propIdx, p2.color); 
+                if (spacesData[propIdx].isMortgaged) { let mortTax = Math.floor((spacesData[propIdx].price / 2) * 0.10); p2.balance -= mortTax; logTransaction(p2.id, -mortTax, `Loan Tax (${spacesData[propIdx].name})`); } 
+            }
+            let p2Select = document.getElementById('trade-p2-props'); let p2TransferCount = 0;
+            for (let opt of p2Select.selectedOptions) { 
+                let propIdx = parseInt(opt.value); spacesData[propIdx].owner = p1.id; p2.propertiesOwned = p2.propertiesOwned.filter(id => id !== propIdx); p1.propertiesOwned.push(propIdx); p2TransferCount++; markPropertyOwned(propIdx, p1.color); 
+                if (spacesData[propIdx].isMortgaged) { let mortTax = Math.floor((spacesData[propIdx].price / 2) * 0.10); p1.balance -= mortTax; logTransaction(p1.id, -mortTax, `Loan Tax (${spacesData[propIdx].name})`); } 
+            }
+            
+            p1.balance -= p1Cash; p2.balance += p1Cash; p2.balance -= p2Cash; p1.balance += p2Cash; p1.balance -= fee; p2.balance -= fee;
+            logTransaction(p1.id, -fee, "Trade Fee"); logTransaction(p2.id, -fee, "Trade Fee");
+            if (p1Cash > 0) { logTransaction(p1.id, -p1Cash, `Cash to ${p2.name}`); logTransaction(p2.id, p1Cash, `Cash from ${p1.name}`); } if (p2Cash > 0) { logTransaction(p2.id, -p2Cash, `Cash to ${p1.name}`); logTransaction(p1.id, p2Cash, `Cash from ${p2.name}`); }
+            if (p1TransferCount > 0 || p2TransferCount > 0) { logTransaction(p1.id, 0, `Traded with ${p2.name}`); logTransaction(p2.id, 0, `Traded with ${p1.name}`); }
+
+            document.getElementById('trade-modal-overlay').style.display = 'none'; updateScoreboard(); renderDashboard();
+            evaluateSynergy(p1.id); evaluateSynergy(p2.id);
+            triggerNews("PRIVATE TRADE", `${p1.name} and ${p2.name} completed a private trade!<br><br><span style="font-size:14px; color:#c0392b;">The Bank collected ${fm(fee*2)} in transfer fees.</span>`);
         }
     </script>
 </body>
 </html>
+```[cite: 1]
