@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regional Realtor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #e6f2ff;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        /* The Board Layout */
+        #board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-template-rows: repeat(4, 100px);
+            gap: 5px;
+            justify-content: center;
+            margin: 20px auto;
+            width: 420px;
+        }
+        /* Individual Spaces */
+        .space {
+            background-color: white;
+            border: 2px solid #34495e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding: 5px;
+            position: relative;
+        }
+        /* The Player Token */
+        #player {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        /* Controls */
+        #controls {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2ecc71;
+        }
+        #message {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Regional Realtor</h1>
+    
+    <div id="controls">
+        <button onclick="rollDice()">Roll Dice</button>
+        <div id="message">Click 'Roll Dice' to start your real estate empire!</div>
+    </div>
+
+    <!-- A simplified 12-space board around the edges -->
+    <div id="board">
+        <div class="space" id="space-0">START</div>
+        <div class="space" id="space-1">Main St.</div>
+        <div class="space" id="space-2">Oak Ln.</div>
+        <div class="space" id="space-3">JAIL</div>
+        
+        <div class="space" id="space-11">Pine Ave.</div>
+        <div style="grid-column: span 2; grid-row: span 2;"></div> <!-- Empty middle -->
+        <div class="space" id="space-4">Maple Dr.</div>
+        
+        <div class="space" id="space-10">Cedar Ct.</div>
+        <div class="space" id="space-5">Elm St.</div>
+        
+        <div class="space" id="space-9">FREE PARKING</div>
+        <div class="space" id="space-8">Birch Blvd.</div>
+        <div class="space" id="space-7">Spruce Way</div>
+        <div class="space" id="space-6">TAXES</div>
+    </div>
+
+    <script>
+        // Game Logic (JavaScript)
+        let playerPosition = 0;
+        const totalSpaces = 12;
+
+        // Create the player token and add it to the START space
+        const playerToken = document.createElement('div');
+        playerToken.id = 'player';
+        document.getElementById('space-0').appendChild(playerToken);
+
+        function rollDice() {
+            // Pick a random number between 1 and 6
+            const roll = Math.floor(Math.random() * 6) + 1;
+            
+            // Calculate new position
+            playerPosition = playerPosition + roll;
+            
+            // If they pass start, wrap around the board
+            if (playerPosition >= totalSpaces) {
+                playerPosition = playerPosition - totalSpaces;
+            }
+
+            // Move the player token to the new space
+            const currentSpace = document.getElementById('space-' + playerPosition);
+            currentSpace.appendChild(playerToken);
+
+            // Get the name of the space they landed on
+            const spaceName = currentSpace.innerText;
+            
+            // Update the message on the screen
+            document.getElementById('message').innerText = 
+                `You rolled a ${roll}! You landed on ${spaceName}.`;
+        }
+    </script>
+</body>
+</html>
