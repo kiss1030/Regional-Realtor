@@ -17,40 +17,41 @@
             margin-bottom: 5px;
         }
 
-        /* --- Setup Screen Styles --- */
+        /* --- Setup Screen Styles (Restored to comfortable size) --- */
         #setup-screen {
             background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            max-width: 450px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            max-width: 520px;
             margin: 40px auto;
+            box-sizing: border-box;
         }
         .form-group { margin: 20px 0; text-align: left; }
-        label { font-weight: bold; display: block; margin-bottom: 5px; }
+        label { font-weight: bold; display: block; margin-bottom: 8px; color: #34495e; }
         input[type="number"], input[type="text"], select {
-            width: 100%; padding: 10px; font-size: 16px;
-            box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px;
+            width: 100%; padding: 12px; font-size: 16px;
+            box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px;
         }
         .choice-btn {
-            padding: 10px; margin: 5px; font-size: 14px; cursor: pointer;
+            padding: 12px; margin: 5px; font-size: 15px; cursor: pointer;
             border: 2px solid #3498db; background-color: white; color: #3498db;
-            border-radius: 5px; width: 45%;
+            border-radius: 6px; width: 48%;
         }
         .choice-btn.selected { background-color: #3498db; color: white; }
         .qr-btn { background-color: #f39c12; color: white; border: none; width: 100%; margin-top: 10px; }
         #join-code-box {
             margin-top: 20px; padding: 15px; background-color: #f1f2f6;
-            border: 2px dashed #2c3e50; border-radius: 5px;
+            border: 2px dashed #2c3e50; border-radius: 6px;
         }
-        #the-code { font-size: 24px; font-weight: bold; letter-spacing: 3px; color: #e74c3c; }
+        #the-code { font-size: 26px; font-weight: bold; letter-spacing: 3px; color: #e74c3c; }
         .banker-box {
-            background: #f8f9fa; padding: 15px; border-radius: 5px;
+            background: #f8f9fa; padding: 18px; border-radius: 6px;
             border: 1px solid #dee2e6; margin-top: 20px;
         }
         .start-btn {
             padding: 15px 30px; font-size: 18px; background-color: #27ae60;
-            color: white; border: none; border-radius: 5px; cursor: pointer;
+            color: white; border: none; border-radius: 6px; cursor: pointer;
             margin-top: 20px; width: 100%;
         }
         .start-btn:hover { background-color: #2ecc71; }
@@ -135,17 +136,15 @@
             transition: all 0.3s ease; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.6); z-index: 10;
         }
         #turn-indicator {
-            padding: 10px 20px; border-radius: 5px; color: white; font-weight: bold;
+            padding: 10px 20px; border-radius: 6px; color: white; font-weight: bold;
             display: inline-block; margin-bottom: 10px; font-size: 18px;
         }
 
-        /* --- Audio Control & Modal Popup Styles --- */
-        .audio-controls {
-            margin-top: 10px;
-        }
+        /* --- Audio & Modal Styles --- */
+        .audio-controls { margin-top: 10px; }
         .audio-btn {
-            background-color: #7f8c8d; color: white; border: none; padding: 6px 12px;
-            font-size: 12px; border-radius: 4px; cursor: pointer;
+            background-color: #7f8c8d; color: white; border: none; padding: 6px 14px;
+            font-size: 13px; border-radius: 4px; cursor: pointer;
         }
         .audio-btn:hover { background-color: #606f7b; }
 
@@ -161,17 +160,16 @@
         #modal-box p { font-size: 14px; color: #555; }
         .modal-btn {
             background: #3498db; color: white; border: none; padding: 10px 20px;
-            font-size: 14px; border-radius: 5px; cursor: pointer; margin-top: 15px;
+            font-size: 14px; border-radius: 6px; cursor: pointer; margin-top: 15px;
         }
         .modal-btn:hover { background: #2980b9; }
     </style>
 </head>
 <body>
 
-    <!-- BACKGROUND MUSIC AUDIO ELEMENT -->
-    <!-- loop attribute makes it repeat endlessly, preload auto loads it -->
+    <!-- RELIABLE BACKGROUND MUSIC STREAM -->
     <audio id="bg-music" loop preload="auto">
-        <source src="https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg" type="audio/ogg">
+        <source src="https://upload.wikimedia.org/wikipedia/commons/e/e3/Jazz_In_Paris.ogg" type="audio/ogg">
         Your browser does not support the audio element.
     </audio>
 
@@ -241,7 +239,6 @@
             <button class="start-btn" id="btn-roll" style="width: auto; padding: 10px 20px;" onclick="processTurn()">🎲 Roll Dice</button>
             <p id="message" style="font-weight: bold; font-size: 16px;">Setting up game...</p>
             
-            <!-- Mute / Unmute Button -->
             <div class="audio-controls">
                 <button class="audio-btn" id="mute-btn" onclick="toggleMusic()">🔊 Mute Music</button>
             </div>
@@ -296,7 +293,6 @@
         }
 
         // --- AUDIO CONTROLS ---
-        let isMusicPlaying = false;
         function toggleMusic() {
             const music = document.getElementById('bg-music');
             const muteBtn = document.getElementById('mute-btn');
@@ -369,11 +365,11 @@
                 }
             } 
 
-            // TRIGGER AUDIO PLAYBACK WHEN GAME STARTS (satisfies browser policy)
+            // Start background music securely upon user click interaction
             const music = document.getElementById('bg-music');
-            music.volume = 0.4; // Set background volume to 40% so it's not too loud
+            music.volume = 0.35;
             music.play().catch(error => {
-                console.log("Audio autoplay prevented by browser policy.");
+                console.log("Audio play blocked by browser:", error);
             });
 
             let humanAssigned = false;
@@ -530,7 +526,7 @@
 
         function executeRoll(p) {
             const roll1 = Math.floor(Math.random() * 6) + 1;
-            const roll2 = mathRandomRoll = Math.floor(Math.random() * 6) + 1; 
+            const roll2 = Math.floor(Math.random() * 6) + 1; 
             const totalRoll = roll1 + roll2;
             
             p.position += totalRoll;
