@@ -17,38 +17,46 @@
             margin-bottom: 5px;
         }
 
-        /* --- Setup Screen Styles (Restored to comfortable size) --- */
+        /* --- Setup Screen Styles --- */
         #setup-screen {
             background-color: white;
-            padding: 40px;
+            padding: 35px;
             border-radius: 12px;
             box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-            max-width: 520px;
-            margin: 40px auto;
+            max-width: 550px;
+            margin: 30px auto;
             box-sizing: border-box;
+            text-align: left;
         }
-        .form-group { margin: 20px 0; text-align: left; }
-        label { font-weight: bold; display: block; margin-bottom: 8px; color: #34495e; }
+        #setup-screen h1 { text-align: center; }
+        .form-group { margin: 18px 0; }
+        label { font-weight: bold; display: block; margin-bottom: 6px; color: #34495e; }
         input[type="number"], input[type="text"], select {
-            width: 100%; padding: 12px; font-size: 16px;
+            width: 100%; padding: 10px; font-size: 15px;
             box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px;
         }
         .choice-btn {
-            padding: 12px; margin: 5px; font-size: 15px; cursor: pointer;
+            padding: 10px; margin: 5px 5px 5px 0; font-size: 14px; cursor: pointer;
             border: 2px solid #3498db; background-color: white; color: #3498db;
-            border-radius: 6px; width: 48%;
+            border-radius: 6px; width: 48%; display: inline-block; text-align: center; box-sizing: border-box;
         }
         .choice-btn.selected { background-color: #3498db; color: white; }
         .qr-btn { background-color: #f39c12; color: white; border: none; width: 100%; margin-top: 10px; }
         #join-code-box {
             margin-top: 20px; padding: 15px; background-color: #f1f2f6;
-            border: 2px dashed #2c3e50; border-radius: 6px;
+            border: 2px dashed #2c3e50; border-radius: 6px; text-align: center;
         }
-        #the-code { font-size: 26px; font-weight: bold; letter-spacing: 3px; color: #e74c3c; }
-        .banker-box {
-            background: #f8f9fa; padding: 18px; border-radius: 6px;
-            border: 1px solid #dee2e6; margin-top: 20px;
+        #the-code { font-size: 24px; font-weight: bold; letter-spacing: 3px; color: #e74c3c; }
+        
+        .banker-box, .pawn-config-box {
+            background: #f8f9fa; padding: 15px; border-radius: 6px;
+            border: 1px solid #dee2e6; margin-top: 15px;
         }
+        .player-pawn-row {
+            display: flex; gap: 10px; margin-bottom: 8px; align-items: center;
+        }
+        .player-pawn-row span { font-weight: bold; width: 80px; font-size: 14px; }
+
         .start-btn {
             padding: 15px 30px; font-size: 18px; background-color: #27ae60;
             color: white; border: none; border-radius: 6px; cursor: pointer;
@@ -76,34 +84,16 @@
             text-align: left;
         }
         .player-title {
-            font-size: 11px;
-            font-weight: bold;
-            color: #8e44ad;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            display: block;
-            letter-spacing: 1px;
+            font-size: 11px; font-weight: bold; color: #8e44ad;
+            text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px;
         }
-        .player-name {
-            font-weight: bold; 
-            font-size: 15px; 
-            margin-bottom: 8px;
-            color: #2c3e50;
-        }
+        .player-name { font-weight: bold; font-size: 15px; margin-bottom: 8px; color: #2c3e50; }
         .score-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            margin-top: 4px;
-            color: #7f8c8d;
+            display: flex; justify-content: space-between; font-size: 12px; margin-top: 4px; color: #7f8c8d;
         }
         .score-row.main {
-            font-size: 15px;
-            font-weight: bold;
-            color: #27ae60; 
-            margin-bottom: 6px;
-            border-bottom: 1px solid #ecf0f1;
-            padding-bottom: 6px;
+            font-size: 15px; font-weight: bold; color: #27ae60; 
+            margin-bottom: 6px; border-bottom: 1px solid #ecf0f1; padding-bottom: 6px;
         }
 
         #board {
@@ -131,16 +121,19 @@
         }
         .board-center h2 { font-size: 38px; color: #2c3e50; text-transform: uppercase; letter-spacing: 3px; margin: 0; }
         .board-center h3 { margin: 5px 0 0 0; color: #7f8c8d; }
+        
+        /* Pawn Token Styles */
         .player-token {
-            width: 18px; height: 18px; border-radius: 50%; position: absolute;
-            transition: all 0.3s ease; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.6); z-index: 10;
+            width: 22px; height: 22px; border-radius: 50%; position: absolute;
+            transition: all 0.3s ease; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.6); 
+            z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 12px;
         }
+        
         #turn-indicator {
             padding: 10px 20px; border-radius: 6px; color: white; font-weight: bold;
-            display: inline-block; margin-bottom: 10px; font-size: 18px;
+            display: inline-block; margin-bottom: 10px; font-size: 18px; text-align: center;
         }
 
-        /* --- Audio & Modal Styles --- */
         .audio-controls { margin-top: 10px; }
         .audio-btn {
             background-color: #7f8c8d; color: white; border: none; padding: 6px 14px;
@@ -167,13 +160,11 @@
 </head>
 <body>
 
-    <!-- RELIABLE BACKGROUND MUSIC STREAM -->
     <audio id="bg-music" loop preload="auto">
         <source src="https://upload.wikimedia.org/wikipedia/commons/e/e3/Jazz_In_Paris.ogg" type="audio/ogg">
         Your browser does not support the audio element.
     </audio>
 
-    <!-- MODAL POPUP CONTAINER -->
     <div id="modal-overlay">
         <div id="modal-box">
             <h3 id="modal-title">Notice</h3>
@@ -186,37 +177,60 @@
     <div id="setup-screen">
         <h1>Welcome Realtors</h1>
         
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 20px; text-align: center;">
             <button class="choice-btn selected" id="btn-host-mode" onclick="toggleMode('host')">Host Game</button>
             <button class="choice-btn" id="btn-join-mode" onclick="toggleMode('join')">Join Game</button>
         </div>
 
         <div id="host-ui">
+            <!-- Board Edition Selector -->
+            <div class="form-group">
+                <label for="board-edition">Select Country / Board Edition</label>
+                <select id="board-edition">
+                    <option value="global">Global Edition (US / Standard)</option>
+                    <option value="london">London Edition (UK)</option>
+                </select>
+            </div>
+
             <div class="form-group">
                 <label for="player-count">Total Users (2-8)</label>
-                <input type="number" id="player-count" min="2" max="8" value="2">
+                <input type="number" id="player-count" min="2" max="8" value="2" onchange="updatePlayerConfigOptions()">
             </div>
+            
             <div class="form-group">
                 <label>Who are you playing with?</label>
-                <button class="choice-btn" id="btn-real" onclick="selectOpponent('real')">Real Players</button>
-                <button class="choice-btn selected" id="btn-ai" onclick="selectOpponent('ai')">AI / System</button>
+                <div>
+                    <button class="choice-btn" id="btn-real" onclick="selectOpponent('real')">Real Players</button>
+                    <button class="choice-btn selected" id="btn-ai" onclick="selectOpponent('ai')">AI / System</button>
+                </div>
             </div>
+
+            <!-- Player Pawns Configuration Box -->
+            <div class="form-group pawn-config-box">
+                <label>Configure Player Pawns & Icons</label>
+                <div id="pawn-inputs-container">
+                    <!-- Dynamically generated pawn options -->
+                </div>
+            </div>
+
             <div class="form-group banker-box">
                 <label for="banker-select">Assign Banker</label>
                 <select id="banker-select">
                     <option value="0">Player 1</option>
                     <option value="1">Player 2</option>
                 </select>
-                <label style="margin-top: 15px; font-weight: normal; cursor: pointer;">
+                <label style="margin-top: 10px; font-weight: normal; cursor: pointer;">
                     <input type="checkbox" id="banker-plays" checked> 
                     The Banker will also play on the board
                 </label>
             </div>
+
             <div id="join-code-box" style="display: none;">
                 <p>Share this code to let others join:</p>
                 <div id="the-code">------</div>
-                <button class="choice-btn qr-btn" onclick="alert('QR scanner coming soon!')">🔗 Generate QR Code</button>
+                <button class="choice-btn qr-btn" style="width:100%; margin:0;" onclick="alert('QR scanner coming soon!')">🔗 Generate QR Code</button>
             </div>
+
             <button class="start-btn" onclick="startGame('host')">Start Game</button>
         </div>
 
@@ -225,7 +239,7 @@
                 <label for="join-code-input">Enter 6-Character Code:</label>
                 <input type="text" id="join-code-input" placeholder="A1B2C3" maxlength="6" style="text-transform: uppercase;">
             </div>
-            <p style="margin: 15px 0; font-weight: bold;">OR</p>
+            <p style="margin: 15px 0; font-weight: bold; text-align: center;">OR</p>
             <button class="choice-btn qr-btn" style="padding: 15px;" onclick="alert('Camera opening soon!')">📷 Scan QR Code</button>
             <button class="start-btn" onclick="startGame('join')">Join Session</button>
         </div>
@@ -245,29 +259,56 @@
         </div>
         <div id="board">
             <div class="board-center">
-                <h2>Regional<br>Realtor</h2>
-                <h3>Global Edition</h3>
+                <h2 id="center-board-title">Regional<br>Realtor</h2>
+                <h3 id="center-board-edition">Global Edition</h3>
             </div>
         </div>
     </div>
 
     <script>
-        // --- LOBBY & BANKER LOGIC ---
         let isPlayingAI = true;
         const JAIL_FINE = 50;
+        const availablePawns = ['🏎️', '🎩', '🐶', '🚢', '🐱', '👞', '🚗', '🚲'];
+        const playerColors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#e67e22', '#1abc9c', '#34495e']; 
 
-        document.getElementById('player-count').addEventListener('input', function(e) {
-            let count = parseInt(e.target.value);
-            let select = document.getElementById('banker-select');
-            select.innerHTML = ''; 
+        // Dynamically build player pawn configuration rows and banker select options
+        function updatePlayerConfigOptions() {
+            let count = parseInt(document.getElementById('player-count').value);
+            
+            // Update Banker Select Options
+            let bankerSelect = document.getElementById('banker-select');
+            let currentBankerVal = bankerSelect.value;
+            bankerSelect.innerHTML = '';
+            
+            // Update Pawn Inputs Container
+            let pawnContainer = document.getElementById('pawn-inputs-container');
+            pawnContainer.innerHTML = '';
+
             if(count >= 2 && count <= 8) {
                 for(let i = 0; i < count; i++) {
+                    // Banker option
                     let opt = document.createElement('option');
-                    opt.value = i; opt.innerText = "Player " + (i + 1);
-                    select.appendChild(opt);
+                    opt.value = i; 
+                    opt.innerText = "Player " + (i + 1);
+                    bankerSelect.appendChild(opt);
+
+                    // Pawn row
+                    let row = document.createElement('div');
+                    row.className = 'player-pawn-row';
+                    row.innerHTML = `
+                        <span>Player ${i + 1}:</span>
+                        <select id="pawn-select-${i}" style="flex:1;">
+                            ${availablePawns.map((p, idx) => `<option value="${p}" ${idx === i ? 'selected' : ''}>Pawn ${p}</option>`).join('')}
+                        </select>
+                    `;
+                    pawnContainer.appendChild(row);
                 }
+                if(currentBankerVal < count) bankerSelect.value = currentBankerVal;
             }
-        });
+        }
+
+        // Initialize setup options on load
+        updatePlayerConfigOptions();
 
         function toggleMode(mode) {
             const hostUI = document.getElementById('host-ui'), joinUI = document.getElementById('join-ui');
@@ -292,7 +333,6 @@
             }
         }
 
-        // --- AUDIO CONTROLS ---
         function toggleMusic() {
             const music = document.getElementById('bg-music');
             const muteBtn = document.getElementById('mute-btn');
@@ -305,26 +345,35 @@
             }
         }
 
-        // --- GLOBAL / ORIGINAL BOARD DATA ---
+        // --- BOARD DATASETS ---
         const totalSpaces = 40; 
-        const spaceNames = [
+        const spaceNamesGlobal = [
             "START", "Vine St.", "Social Responsibility", "Coventry Ave.", "Income Tax", "Reading Railroad", "Oriental Ave.", "Try your luck", "Vermont Ave.", "Connecticut Ave.",
             "JAIL", "St. Charles Pl.", "Electric Co.", "States Ave.", "Virginia Ave.", "Penn. Railroad", "St. James Pl.", "Social Responsibility", "Tennessee Ave.", "New York Ave.",
             "FREE PARKING", "Kentucky Ave.", "Try your luck", "Indiana Ave.", "Illinois Ave.", "B. & O. Railroad", "Atlantic Ave.", "Ventnor Ave.", "Water Works", "Marvin Gardens",
             "GO TO JAIL", "Pacific Ave.", "North Carolina", "Social Responsibility", "Penn. Ave.", "Short Line RR", "Try your luck", "Park Place", "Luxury Tax", "Boardwalk"
         ];
-        const nonPropertySpaces = [
-            "START", "Social Responsibility", "Income Tax", "Try your luck", "JAIL", 
-            "FREE PARKING", "GO TO JAIL", "Luxury Tax"
+
+        const spaceNamesLondon = [
+            "GO", "Old Kent Road", "Social Responsibility", "Whitechapel Road", "Income Tax", "Kings Cross Stn", "The Angel Islington", "Try your luck", "Euston Road", "Pentonville Road",
+            "JAIL", "Pall Mall", "Electric Co.", "Whitehall", "Northumberland", "Marylebone Stn", "Bow Street", "Social Responsibility", "Marlborough St", "Vine Street",
+            "FREE PARKING", "Strand", "Try your luck", "Fleet Street", "Trafalgar Square", "Fenchurch St", "Leicester Square", "Coventry Street", "Water Works", "Piccadilly",
+            "GO TO JAIL", "Regent Street", "Oxford Street", "Social Responsibility", "Bond Street", "Liverpool St", "Try your luck", "Park Lane", "Super Tax", "Mayfair"
         ];
 
-        // --- MULTIPLAYER DATA ---
+        let spaceNames = spaceNamesGlobal;
+        const nonPropertySpaces = [
+            "START", "GO", "Social Responsibility", "Income Tax", "Try your luck", "JAIL", 
+            "FREE PARKING", "GO TO JAIL", "Luxury Tax", "Super Tax"
+        ];
+
         let players = [];
         let currentPlayerIndex = 0;
-        const playerColors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#e67e22', '#1abc9c', '#34495e']; 
 
         function buildBoard() {
             const board = document.getElementById('board');
+            board.innerHTML = `<div class="board-center"><h2 id="center-board-title">Regional<br>Realtor</h2><h3 id="center-board-edition">Edition</h3></div>`;
+
             for (let i = 0; i < totalSpaces; i++) {
                 const spaceDiv = document.createElement('div');
                 spaceDiv.className = 'space'; spaceDiv.id = 'space-' + i;
@@ -354,6 +403,17 @@
         function startGame(action) {
             let numPlayers = 2; let bankerIndex = 0; let bankerPlays = true;
 
+            // Get selected Board Edition
+            let editionChoice = document.getElementById('board-edition').value;
+            if (editionChoice === 'london') {
+                spaceNames = spaceNamesLondon;
+                document.getElementById('center-board-edition').innerText = "London Edition";
+            } else {
+                spaceNames = spaceNamesGlobal;
+                document.getElementById('center-board-edition').innerText = "Global Edition";
+            }
+            buildBoard();
+
             if (action === 'host') {
                 numPlayers = parseInt(document.getElementById('player-count').value);
                 bankerIndex = parseInt(document.getElementById('banker-select').value);
@@ -365,14 +425,12 @@
                 }
             } 
 
-            // Start background music securely upon user click interaction
             const music = document.getElementById('bg-music');
             music.volume = 0.35;
-            music.play().catch(error => {
-                console.log("Audio play blocked by browser:", error);
-            });
+            music.play().catch(error => { console.log("Audio play blocked by browser:", error); });
 
             let humanAssigned = false;
+            players = [];
 
             for(let i = 0; i < numPlayers; i++) {
                 let isBanker = (i === bankerIndex);
@@ -385,18 +443,21 @@
                     else if (isPlaying) { isAI = true; }
                 }
 
+                // Get chosen pawn icon from dropdown
+                let pawnIcon = document.getElementById(`pawn-select-${i}`) ? document.getElementById(`pawn-select-${i}`).value : availablePawns[i];
+
                 players.push({
-                    id: i, name: "Player " + (i + 1), color: playerColors[i], position: 0,
+                    id: i, name: "Player " + (i + 1), color: playerColors[i], pawn: pawnIcon, position: 0,
                     isBanker: isBanker, isPlaying: isPlaying, isAI: isAI,
                     balance: 1500, netWorth: 1500, liquidity: 1500,
-                    inJail: false,
-                    propertiesOwned: []
+                    inJail: false, propertiesOwned: []
                 });
 
                 if (isPlaying) {
                     const token = document.createElement('div');
                     token.className = 'player-token'; token.id = 'token-' + i;
                     token.style.backgroundColor = playerColors[i];
+                    token.innerHTML = pawnIcon;
                     token.style.marginLeft = (i * 6) + 'px'; token.style.marginTop = (i * 6) + 'px';
                     document.getElementById('space-0').appendChild(token);
                 }
@@ -439,7 +500,7 @@
                     
                     scoreDiv.innerHTML = `
                         <span class="player-title" style="color: ${player.color}">${title}</span>
-                        <div class="player-name">${player.name}${bankerIcon}</div>
+                        <div class="player-name">${player.pawn} ${player.name}${bankerIcon}</div>
                         <div class="score-row main"><span>Cash:</span> <span>£${player.balance}</span></div>
                         <div class="score-row"><span>Net Worth:</span> <span>£${player.netWorth}</span></div>
                         <div class="score-row"><span>Liquidity:</span> <span>£${player.liquidity}</span></div>
@@ -464,7 +525,7 @@
             const msg = document.getElementById('message');
             
             let bankerTag = currentPlayer.isBanker ? " (Banker)" : "";
-            indicator.innerText = `${currentPlayer.name}${bankerTag}'s Turn`;
+            indicator.innerText = `${currentPlayer.pawn} ${currentPlayer.name}${bankerTag}'s Turn`;
             indicator.style.backgroundColor = currentPlayer.color;
 
             if (currentPlayer.isAI) {
@@ -480,7 +541,6 @@
             }
         }
 
-        // --- MODAL FUNCTIONS ---
         function showModal(title, text, callback) {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-text').innerText = text;
@@ -496,7 +556,6 @@
             }
         }
 
-        // --- TURN & MOVEMENT LOGIC ---
         function processTurn() {
             const p = players[currentPlayerIndex];
 
